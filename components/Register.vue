@@ -15,10 +15,16 @@ const form = reactive({
   email: '',
   password: '',
 })
+const fetching = ref<boolean>(false)
+const submit = async () => {
+  fetching.value = true
+  const { isFetching } = await useRegister(form)
+  fetching.value = isFetching.value
+}
 </script>
 <template>
   <div class="card w-[28rem] bg-neutral shadow-xl" ref="register">
-    <form>
+    <form @submit.prevent="submit">
       <div class="border-b py-6 border-accent flex justify-between">
         <div class="px-6">
           <p class="font-bold text-2xl">Sign up</p>
@@ -39,6 +45,7 @@ const form = reactive({
               type="text"
               placeholder="First name"
               class="input w-full max-w-xs bg-base-100"
+              v-model="form.firstname"
             />
           </div>
           <div class="flex flex-col gap-4">
@@ -47,6 +54,7 @@ const form = reactive({
               type="text"
               placeholder="Surname"
               class="input w-full max-w-xs bg-base-100"
+              v-model="form.surname"
             />
           </div>
         </div>
@@ -56,12 +64,14 @@ const form = reactive({
           type="text"
           placeholder="Email address"
           class="input w-full bg-base-100"
+          v-model="form.email"
         />
         <input
           name="password"
           type="password"
           placeholder="Password"
           class="input w-full bg-base-100"
+          v-model="form.password"
         />
         <p class="text-xs">
           People who use our service may have uploaded your contact information
@@ -85,8 +95,8 @@ const form = reactive({
           time.
         </p>
         <button
-          to="/register"
           class="btn btn-secondary normal-case w-2/3 mx-auto mt-2"
+          :disabled="fetching"
         >
           Sign up
         </button>

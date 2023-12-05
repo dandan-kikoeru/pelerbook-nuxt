@@ -1,5 +1,12 @@
 import type { Config } from 'tailwindcss'
 export default <Partial<Config>>{
+  theme: {
+    extend: {
+      boxShadow: {
+        center: '0px 0px 16px 4px rgba(0,0,0,0.2)',
+      },
+    },
+  },
   plugins: [require('daisyui')],
   daisyui: {
     themes: [

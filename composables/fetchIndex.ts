@@ -1,8 +1,10 @@
 import axios from 'axios'
-export const useFetchPosts = async () => {
+export const useFetchIndex = async () => {
   const { getBearer } = useAuthStore()
-  const response = await axios
-    .get('/api/post', {
+  const { pages } = useIndexStore()
+
+  const response: any = await axios
+    .get(`/api/post?page=${pages}`, {
       headers: {
         Authorization: getBearer,
       },
@@ -10,5 +12,6 @@ export const useFetchPosts = async () => {
     .catch((error) => {
       console.error(`${error.response.status}: ${error.response.data.message}`)
     })
-  return response
+
+  return { response }
 }

@@ -1,8 +1,20 @@
 <script lang="ts" setup>
-const route = useRoute()
+import axios from 'axios'
+const route: any = useRoute()
+const { getBearer } = useAuthStore()
+
+const posts = ref()
+try {
+  const res = await axios.get(`/api/post/${route.params.id}`, {
+    headers: {
+      Authorization: getBearer,
+    },
+  })
+  posts.value = res.data.data
+} catch (error: any) {
+  navigateTo('/', { replace: true })
+}
 </script>
 <template>
-  <div>
-    {{ route.params.id }}
-  </div>
+  <Post :post="posts" v-if="posts" />
 </template>

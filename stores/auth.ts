@@ -1,11 +1,10 @@
 import type { User } from '~/types'
-import axios from 'axios'
 
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore('Auth', () => {
   const token = useCookie('TOKEN')
   const user = ref<User | null>(null)
   const isLoggedIn = computed(() => !!user.value)
-  const setToken = (data?: any) => {
+  const setToken = (data?: string) => {
     token.value = data
   }
 

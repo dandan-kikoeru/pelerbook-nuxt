@@ -1,20 +1,26 @@
 <script setup lang="ts">
 definePageMeta({
   layout: false,
+  middleware: 'guest',
 })
 const [showRegister, toggleRegister] = useToggle()
 
 const form = reactive({
-  email: 'wgutmann@example.org',
+  email: 'littel.tod@example.org',
   password: 'password',
 })
 
-const submit = () => useLogin(form)
+const fetching = ref<boolean>(false)
+const submit = async () => {
+  fetching.value = true
+  const { isFetching } = await useLogin(form)
+  fetching.value = isFetching.value
+}
 </script>
 <template>
   <div class="flex justify-center items-center min-h-screen flex-col">
     <div class="text-center mb-16">
-      <img :src="'/title.webp'" class="max-w-xs" />
+      <img src="/title.webp" class="max-w-xs" />
       <p class="max-w-xs mt-8 text-lg">
         Pelerbook helps you connect your peler and share it with other people's
         peler.
@@ -38,11 +44,14 @@ const submit = () => useLogin(form)
           <div
             class="card-actions justify-center border-b-2 border-accent pb-4 flex-col items-center"
           >
-            <button class="btn btn-primary normal-case w-full mt-2">
+            <button
+              class="btn btn-primary normal-case w-full mt-2"
+              :disabled="fetching"
+            >
               Log in
             </button>
-            <Link href="/recover" class="hover:underline text-primary text-sm"
-              >Forgotten password?</Link
+            <NuxtLink to="/recover" class="hover:underline text-primary text-sm"
+              >Forgotten password?</NuxtLink
             >
           </div>
           <div
@@ -62,4 +71,3 @@ const submit = () => useLogin(form)
     />
   </div>
 </template>
-~/stores/auth

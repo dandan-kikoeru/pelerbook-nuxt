@@ -2,6 +2,7 @@
 import axios from 'axios'
 const emit = defineEmits()
 const createPost = ref(null)
+import type { Form } from '~/types'
 
 onClickOutside(createPost, () => emit('close'))
 
@@ -12,8 +13,10 @@ useEventListener(document, 'keydown', (e) => {
 })
 
 const captionStore = useCaptionStore()
-const form = reactive({
+
+const form: Form = reactive({
   caption: captionStore.caption,
+  image: '',
 })
 const { getBearer } = useAuthStore()
 const index = useIndexStore()
@@ -25,6 +28,7 @@ const submit = async () => {
     const response: any = await axios.post('/api/post/store', form, {
       headers: {
         Authorization: getBearer,
+        'Content-Type': 'multipart/form-data',
       },
     })
     await index.unshiftPosts(response.data)
@@ -42,11 +46,17 @@ const handleTextarea = () => {
   textarea.style.height = `${textarea.scrollHeight}px`
   captionStore.setCaption(form.caption)
 }
+
+const fileInput = ref<any>(null)
+const handleFileInput = () => {
+  form.image = fileInput.value?.files[0]
+  console.log(fileInput.value?.files)
+}
+
 onMounted(() => {
   document.body.classList.add('overflow-hidden', 'mr-[1vw]')
   document.body.classList.remove('overflow-y-scroll')
 })
-
 onUnmounted(() => {
   document.body.classList.remove('overflow-hidden', 'mr-[1vw]')
   document.body.classList.add('overflow-y-scroll')
@@ -71,13 +81,14 @@ defineProps<{
         </div>
       </div>
       <div class="card-body gap-4 py-4">
-        <div class="flex gap-4">
+        <div class="flex gap-4 flex-col">
           <textarea
             v-model="form.caption"
             :placeholder="`What's on your mind, ${firstName}`"
             class="w-full bg-transparent outline-none max-h-96 resize-none"
             @input="handleTextarea()"
           />
+          <input type="file" ref="fileInput" @change="handleFileInput" />
         </div>
         <button
           class="btn btn-secondary normal-case btn-block mx-auto mt-2"

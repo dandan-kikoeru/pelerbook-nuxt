@@ -6,19 +6,19 @@ export default defineNuxtConfig({
   nitro: {
     routeRules: {
       '/api/**': {
-        proxy: 'http://localhost:7270/api/**',
+        proxy: 'http://localhost:8000/api/**',
       },
       '/sanctum/csrf-cookie': {
-        proxy: 'http://localhost:7270/sanctum/csrf-cookie',
+        proxy: 'http://localhost:8000/sanctum/csrf-cookie',
       },
       '/avatars/**': {
-        proxy: 'http://localhost:7270/avatars/**',
+        proxy: 'http://localhost:8000/avatars/**',
       },
       '/covers/**': {
-        proxy: 'http://localhost:7270/covers/**',
+        proxy: 'http://localhost:8000/covers/**',
       },
       '/images/**': {
-        proxy: 'http://localhost:7270/images/**',
+        proxy: 'http://localhost:8000/images/**',
       },
     },
   },

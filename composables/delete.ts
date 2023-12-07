@@ -12,7 +12,6 @@ export const useDelete = () => {
         },
       })
       if (index !== undefined) {
-        await console.log(index)
         await posts.splice(index, 1)
       }
       if (route.params.id) {

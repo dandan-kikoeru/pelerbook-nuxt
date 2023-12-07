@@ -54,12 +54,12 @@ const handleDeletePost = () => {
               <button class="py-2 text-lg"><IconsDelete />Delete</button>
             </li>
           </form>
-          {{ index }}
         </Menu>
       </div>
       <p class="mt-3">
         {{ post.caption }}
       </p>
+      <img :src="post.image" v-if="post.image" class="rounded-xl" />
     </div>
   </div>
 </template>

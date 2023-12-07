@@ -46,3 +46,8 @@ export interface Link {
   label: string
   active: boolean
 }
+
+export interface Form {
+  caption?: string
+  image?: any
+}

@@ -7,7 +7,7 @@ definePageMeta({
   middleware: ['auth'],
 })
 
-const fetching = ref(false)
+const fetching = ref<boolean>(false)
 
 const fetchPost = async () => {
   try {

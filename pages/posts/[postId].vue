@@ -5,7 +5,7 @@ const { getBearer } = useAuthStore()
 
 const posts = ref()
 try {
-  const res = await axios.get(`/api/post/${route.params.id}`, {
+  const res = await axios.get(`/api/post/${route.params.postId}`, {
     headers: {
       Authorization: getBearer,
     },

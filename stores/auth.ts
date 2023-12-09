@@ -1,6 +1,6 @@
 import type { User } from '~/types'
 
-export const useAuthStore = defineStore('Auth', () => {
+export const useAuthStore = defineStore('auth', () => {
   const token = useCookie('TOKEN')
   const user = ref<User | null>(null)
   const isLoggedIn = computed(() => !!user.value)

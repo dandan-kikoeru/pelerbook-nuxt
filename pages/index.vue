@@ -13,9 +13,9 @@ const fetchPost = async () => {
   try {
     fetching.value = true
     const { response } = await useFetchIndex()
-    setPosts(response.data.data)
-    setLinks(response.data.links)
-    incrementPage()
+    await setPosts(response.data.data)
+    await setLinks(response.data.links)
+    await incrementPage()
   } finally {
     fetching.value = false
   }

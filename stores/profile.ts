@@ -1,9 +1,10 @@
 import type { Links, Post } from '~/types'
 
-export const useIndexStore = defineStore('index', () => {
+export const useProfileStore = defineStore('profile', () => {
   const posts = ref<Post[]>([])
   const pages = ref<number>(1)
   const links = ref<Links>()
+  const profileId = ref<any>()
 
   const setPosts = (data?: any) => {
     posts.value.push(...data)
@@ -17,14 +18,16 @@ export const useIndexStore = defineStore('index', () => {
   }
 
   const resetPosts = () => {
-    setTimeout(() => {
-      posts.value = []
-      pages.value = 1
-    }, 500)
+    posts.value = []
+    pages.value = 1
   }
 
   const setLinks = (data: Links) => {
     links.value = data
+  }
+
+  const setProfileId = (data: any) => {
+    profileId.value = data
   }
 
   return {
@@ -36,5 +39,7 @@ export const useIndexStore = defineStore('index', () => {
     setLinks,
     links,
     unshiftPosts,
+    profileId,
+    setProfileId,
   }
 })

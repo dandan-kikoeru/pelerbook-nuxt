@@ -1,14 +1,24 @@
 <script setup lang="ts">
 import axios from 'axios'
+import type { User } from '~/types'
 const { posts, links, pages, profileId } = storeToRefs(useProfileStore())
 const { setPosts, incrementPage, setLinks, setProfileId, resetPosts } =
   useProfileStore()
 const { user, getBearer } = useAuthStore()
-const route = useRoute()
+const route: any = useRoute()
 
 definePageMeta({
   middleware: ['auth'],
 })
+const defaultProfileValue: User = {
+  avatar: '/avatars/guest.webp',
+  firstname: 'John',
+  surname: 'Doe',
+  id: 0,
+  cover: '',
+  createdAt: new Date('1970-01-01T00:00:00.000Z'),
+}
+const profile = ref<User | null>(defaultProfileValue)
 
 const fetching = ref<boolean>(false)
 if (!profileId.value) {
@@ -22,7 +32,15 @@ if (route.params.id !== profileId.value) {
 
 const fetchPost = async () => {
   try {
-    const response = await axios.get(
+    const responsePosts = await axios.get(
+      `/api/profile/posts/${route.params.id}?page=${pages.value}`,
+      {
+        headers: {
+          Authorization: getBearer,
+        },
+      },
+    )
+    const responseProfile = await axios.get(
       `/api/profile/${route.params.id}?page=${pages.value}`,
       {
         headers: {
@@ -30,8 +48,9 @@ const fetchPost = async () => {
         },
       },
     )
-    await setLinks(response.data.links)
-    await setPosts(response.data.data)
+    await setLinks(responsePosts.data.links)
+    await setPosts(responsePosts.data.data)
+    profile.value = responseProfile.data.data
     await incrementPage()
   } catch (error: any) {
     console.error(error)
@@ -65,7 +84,37 @@ const [showCreatePost, toggleCreatePost] = useToggle(false)
 const captionStore = useCaptionStore()
 </script>
 <template>
-  <div class="bg-neutral max-w-lg mx-auto mt-4 flex p-4 rounded-xl gap-2">
+  <div class="bg-neutral">
+    <div>
+      <div
+        v-if="profile?.cover"
+        class="relative aspect-[3/1] max-w-6xl mx-auto overflow-hidden rounded-b-xl"
+      >
+        <img class="object-cover w-full h-full" :src="profile?.cover" />
+      </div>
+      <div
+        v-else
+        class="relative aspect-[3/1] max-w-6xl mx-auto overflow-hidden rounded-xl bg-black"
+      ></div>
+    </div>
+  </div>
+  <div
+    class="flex flex-col items-center bg-neutral h-40 border-b border-accent relative"
+  >
+    <div class="absolute -top-16 flex flex-col items-center">
+      <img
+        class="h-32 rounded-full border-4 border-neutral"
+        :src="profile?.avatar"
+      />
+      <h1 class="text-2xl">{{ profile?.firstname }} {{ profile?.surname }}</h1>
+      Joined
+      {{ useDateFormat(profile?.createdAt, 'MMM YYYY').value }}
+    </div>
+  </div>
+  <div
+    class="bg-neutral max-w-lg mx-auto mt-4 flex p-4 rounded-xl gap-2"
+    v-if="route.params.id == user?.id"
+  >
     <NuxtLink :to="`${user?.id}`" class="h-12 aspect-square">
       <img :src="user?.avatar" class="rounded-full" />
     </NuxtLink>

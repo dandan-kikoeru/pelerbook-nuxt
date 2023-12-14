@@ -4,7 +4,7 @@ export interface User {
   id: number
   surname: string
   cover: string
-  createdAt: string
+  createdAt: Date
 }
 
 export interface Posts {

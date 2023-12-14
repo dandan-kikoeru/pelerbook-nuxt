@@ -1,6 +1,16 @@
-# Nuxt 3 Minimal Starter
+# Pelerbook
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A Facebook clone build on [Nuxt 3](https://nuxt.com/docs/getting-started/introduction) and [Laravel 10](https://laravel.com/docs/10.x)
+
+👉 [Laravel 10 RESTful API repo](https://github.com/dandan-kikoeru/pelerbook-api)
+
+## Todo
+
+- [ ] Work on the head meta
+- [ ] Code the create post so that it can preview uploaded image
+- [ ] Code the edit post process
+- [ ] Code the like post process
+- [ ] Maybe change the project name to be less ambiguous
 
 ## Setup
 

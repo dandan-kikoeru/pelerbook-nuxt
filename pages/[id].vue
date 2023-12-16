@@ -136,7 +136,7 @@ const captionStore = useCaptionStore()
     <PostSkeleton v-if="fetching" />
   </div>
   <div ref="target" class="-translate-y-[64rem]" />
-  <div v-if="showCreatePost" class="bg-black/50 fixed top-0 w-full h-full">
+  <div v-if="showCreatePost" class="bg-black/50 fixed top-0 w-full h-full z-30">
     <CreatePost
       @close="toggleCreatePost"
       class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"

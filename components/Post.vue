@@ -56,9 +56,7 @@ const handleDeletePost = () => {
           </form>
         </Menu>
       </div>
-      <p class="mt-3">
-        {{ post.caption }}
-      </p>
+      <p class="mt-3" v-html="post.caption" />
       <img :src="post.image" v-if="post.image" class="rounded-xl" />
     </div>
   </div>

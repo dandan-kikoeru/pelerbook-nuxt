@@ -5,6 +5,7 @@ const { post, index } = defineProps<{ post: Post; index?: number }>()
 const auth = useAuthStore()
 
 const [showMenu, toggleMenu] = useToggle(false)
+const [showEditPost, toggleEditPost] = useToggle(false)
 const handleDeletePost = () => {
   const { deletePost } = useDelete()
   deletePost(post.id, index)
@@ -46,7 +47,7 @@ const handleDeletePost = () => {
           class="absolute right-8 top-12 w-48"
           @close="toggleMenu()"
         >
-          <li>
+          <li @click="toggleEditPost()">
             <button class="py-2 text-lg"><IconsEdit />Edit</button>
           </li>
           <form @submit.prevent="handleDeletePost()">
@@ -59,5 +60,14 @@ const handleDeletePost = () => {
       <p class="mt-3" v-html="post.caption" />
       <img :src="post.image" v-if="post.image" class="rounded-xl" />
     </div>
+  </div>
+  <div v-if="showEditPost" class="bg-black/50 fixed top-0 w-full h-full z-30">
+    <EditPost
+      @close="toggleEditPost"
+      class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+      :firstName="auth.user?.firstname"
+      :data="post"
+      :index="index"
+    />
   </div>
 </template>

@@ -30,6 +30,10 @@ export const useProfileStore = defineStore('profile', () => {
     profileId.value = data
   }
 
+  const setPostByIndex = (data: Post, index: number) => {
+    posts.value[index] = data
+  }
+
   return {
     posts,
     setPosts,
@@ -41,5 +45,6 @@ export const useProfileStore = defineStore('profile', () => {
     unshiftPosts,
     profileId,
     setProfileId,
+    setPostByIndex,
   }
 })

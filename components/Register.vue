@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const emit = defineEmits()
-const register = ref(null)
+const registerEl = ref(null)
 
-onClickOutside(register, () => emit('close'))
+onClickOutside(registerEl, () => emit('close'))
 
 useEventListener(document, 'keydown', (e) => {
   if (e.key === 'Escape') {
@@ -15,16 +15,11 @@ const form = reactive({
   email: '',
   password: '',
 })
-const fetching = ref<boolean>(false)
-const submit = async () => {
-  fetching.value = true
-  const { isFetching } = await useRegister(form)
-  fetching.value = isFetching.value
-}
+const { isFetching, register } = useUser()
 </script>
 <template>
-  <div class="card w-[28rem] bg-neutral shadow-xl" ref="register">
-    <form @submit.prevent="submit">
+  <div class="card w-[28rem] bg-neutral shadow-xl" ref="registerEl">
+    <form @submit.prevent="register(form)">
       <div class="border-b py-6 border-accent flex justify-between">
         <div class="px-6">
           <p class="font-bold text-2xl">Sign up</p>
@@ -96,7 +91,7 @@ const submit = async () => {
         </p>
         <button
           class="btn btn-secondary normal-case w-2/3 mx-auto mt-2"
-          :disabled="fetching"
+          :disabled="isFetching"
         >
           Sign up
         </button>

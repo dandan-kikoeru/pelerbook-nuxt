@@ -10,12 +10,7 @@ const form = reactive({
   password: 'password',
 })
 
-const fetching = ref<boolean>(false)
-const submit = async () => {
-  fetching.value = true
-  const { isFetching } = await useLogin(form)
-  fetching.value = isFetching.value
-}
+const { isFetching, login } = useUser()
 </script>
 <template>
   <div class="flex justify-center items-center min-h-screen flex-col">
@@ -26,7 +21,7 @@ const submit = async () => {
         peler.
       </p>
     </div>
-    <form @submit.prevent="submit">
+    <form @submit.prevent="login(form)">
       <div class="card w-96 bg-neutral shadow-xl">
         <div class="card-body gap-4">
           <input
@@ -46,7 +41,7 @@ const submit = async () => {
           >
             <button
               class="btn btn-primary normal-case w-full mt-2"
-              :disabled="fetching"
+              :disabled="isFetching"
             >
               Log in
             </button>

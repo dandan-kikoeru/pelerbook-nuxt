@@ -1,7 +1,8 @@
 <script setup lang="ts">
-const logout = () => useLogout()
 const { user } = useAuthStore()
 const { resetPosts } = useIndexStore()
+
+const { logout } = useUser()
 
 const handleHomeButton = () => {
   window.scrollTo({

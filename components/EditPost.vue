@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import axios from 'axios'
 const emit = defineEmits()
-const editPost = ref(null)
+const editPostEl = ref(null)
+const { isFetching, editPost } = usePost()
 import type { Form, Post } from '~/types'
 
-onClickOutside(editPost, () => emit('close'))
+onClickOutside(editPostEl, () => emit('close'))
 
 useEventListener(document, 'keydown', (e) => {
   if (e.key === 'Escape') {
     emit('close')
   }
 })
-const route = useRoute()
 
 const { data, index: postIndex } = defineProps<{
   data: Post
@@ -21,49 +20,10 @@ const form: Form = reactive({
   caption: data.caption,
   image: data.image,
 })
-const { getBearer } = useAuthStore()
-const index = useIndexStore()
-const profile = useProfileStore()
 
-const fetching = ref<boolean>(false)
 const submit = async () => {
-  try {
-    fetching.value = true
-    const response: any = await axios.post(
-      `/api/post/update/${data.id}`,
-      form,
-      {
-        headers: {
-          Authorization: getBearer,
-          'Content-Type': 'multipart/form-data',
-        },
-      },
-    )
-    if (index !== undefined) {
-      await index.setPostByIndex(response.data, postIndex)
-    }
-
-    if (route.params.id) {
-      await window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      })
-      await profile.resetPosts()
-    }
-
-    /**
-     * TODO: fix this shit and fix image preview
-     */
-    if (route.params.postId) {
-      await window.location.replace(`/posts/${data.id}`)
-    }
-
-    await emit('close')
-  } catch (error: any) {
-    console.error(error)
-  } finally {
-    fetching.value = false
-  }
+  await editPost(form, postIndex, data)
+  await emit('close')
 }
 const handleTextarea = () => {
   const textarea: any = document.querySelector('textarea')
@@ -104,7 +64,7 @@ onUnmounted(() => {
 })
 </script>
 <template>
-  <div class="card w-[28rem] bg-neutral shadow-xl" ref="editPost">
+  <div class="card w-[28rem] bg-neutral shadow-xl" ref="editPostEl">
     <div class="border-b py-6 border-accent flex justify-between">
       <div class="px-6 font-bold text-2xl w-full text-center">Edit Post</div>
       <div
@@ -151,7 +111,7 @@ onUnmounted(() => {
         </div>
         <button
           class="btn btn-secondary normal-case btn-block mx-auto mt-2"
-          :disabled="fetching"
+          :disabled="isFetching"
         >
           Edit
         </button>

@@ -1,62 +1,24 @@
 <script setup lang="ts">
-import axios from 'axios'
-import type { User } from '~/types'
-const { posts, links, pages, profileId } = storeToRefs(useProfileStore())
-const { setPosts, incrementPage, setLinks, setProfileId, resetPosts } =
-  useProfileStore()
-const { user, getBearer } = useAuthStore()
+const profile = useProfileStore()
+const { posts } = storeToRefs(useProfileStore())
+
+const { isFetching, fetchProfile, profileData } = useFetchPost()
+const { user } = useAuthStore()
 const route: any = useRoute()
 
 definePageMeta({
   middleware: ['auth'],
 })
-const defaultProfileValue: User = {
-  avatar: '/avatars/guest.webp',
-  firstname: 'John',
-  surname: 'Doe',
-  id: 0,
-  cover: '',
-  createdAt: new Date('1970-01-01T00:00:00.000Z'),
-}
-const profile = ref<User | null>(defaultProfileValue)
 
-const fetching = ref<boolean>(false)
-if (!profileId.value) {
-  setProfileId(route.params.id)
+if (!profile.profileId) {
+  profile.setProfileId(route.params.id)
 }
 
-if (route.params.id !== profileId.value) {
-  setProfileId(route.params.id)
-  resetPosts()
+if (route.params.id !== profile.profileId) {
+  profile.setProfileId(route.params.id)
+  profile.resetPosts()
 }
 
-const fetchPost = async () => {
-  try {
-    const responsePosts = await axios.get(
-      `/api/profile/posts/${route.params.id}?page=${pages.value}`,
-      {
-        headers: {
-          Authorization: getBearer,
-        },
-      },
-    )
-    const responseProfile = await axios.get(
-      `/api/profile/${route.params.id}?page=${pages.value}`,
-      {
-        headers: {
-          Authorization: getBearer,
-        },
-      },
-    )
-    await setLinks(responsePosts.data.links)
-    await setPosts(responsePosts.data.data)
-    profile.value = responseProfile.data.data
-    await incrementPage()
-  } catch (error: any) {
-    console.error(error)
-    navigateTo('/', { replace: true })
-  }
-}
 const target = ref<HTMLElement | null>(null)
 const isObserverActive = ref(true)
 useIntersectionObserver(target, ([{ isIntersecting }]) => {
@@ -64,20 +26,21 @@ useIntersectionObserver(target, ([{ isIntersecting }]) => {
     return
   }
 
-  if (!links.value?.next) {
+  if (!profile.links?.next) {
     isObserverActive.value = false
   }
-  fetchPost()
+  fetchProfile()
 })
 
 watchArray(posts, () => {
   if (posts.value.length == 0) {
-    fetchPost()
+    fetchProfile()
     isObserverActive.value = true
   }
 })
+
 if (posts.value.length === 0) {
-  fetchPost()
+  fetchProfile()
 }
 
 const [showCreatePost, toggleCreatePost] = useToggle(false)
@@ -87,10 +50,10 @@ const captionStore = useCaptionStore()
   <div class="bg-neutral">
     <div>
       <div
-        v-if="profile?.cover"
+        v-if="profileData?.cover"
         class="relative aspect-[3/1] max-w-6xl mx-auto overflow-hidden rounded-b-xl"
       >
-        <img class="object-cover w-full h-full" :src="profile?.cover" />
+        <img class="object-cover w-full h-full" :src="profileData?.cover" />
       </div>
       <div
         v-else
@@ -104,11 +67,13 @@ const captionStore = useCaptionStore()
     <div class="absolute -top-16 flex flex-col items-center">
       <img
         class="h-32 rounded-full border-4 border-neutral"
-        :src="profile?.avatar"
+        :src="profileData?.avatar"
       />
-      <h1 class="text-2xl">{{ profile?.firstname }} {{ profile?.surname }}</h1>
+      <h1 class="text-2xl">
+        {{ profileData?.firstname }} {{ profileData?.surname }}
+      </h1>
       Joined
-      {{ useDateFormat(profile?.createdAt, 'MMM YYYY').value }}
+      {{ useDateFormat(profileData?.createdAt, 'MMM YYYY').value }}
     </div>
   </div>
   <div
@@ -133,7 +98,7 @@ const captionStore = useCaptionStore()
       :key="post.id"
       :index="index"
     />
-    <PostSkeleton v-if="fetching" />
+    <PostSkeleton v-if="isFetching" />
   </div>
   <div ref="target" class="-translate-y-[64rem]" />
   <div v-if="showCreatePost" class="bg-black/50 fixed top-0 w-full h-full z-30">

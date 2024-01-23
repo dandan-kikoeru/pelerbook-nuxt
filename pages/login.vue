@@ -10,7 +10,7 @@ const form = reactive({
   password: 'password',
 })
 
-const { isFetching, login } = useUser()
+const { isFetching, login } = useAuth()
 </script>
 <template>
   <div class="flex justify-center items-center min-h-screen flex-col">

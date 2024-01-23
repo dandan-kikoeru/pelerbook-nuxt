@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import axios from 'axios'
 const emit = defineEmits()
-const createPost = ref(null)
+const createPostEl = ref(null)
 import type { Form } from '~/types'
-
-onClickOutside(createPost, () => emit('close'))
+const { isFetching, createPost } = usePost()
+onClickOutside(createPostEl, () => emit('close'))
 
 useEventListener(document, 'keydown', (e) => {
   if (e.key === 'Escape') {
@@ -18,28 +17,12 @@ const form: Form = reactive({
   caption: captionStore.caption,
   image: '',
 })
-const { getBearer } = useAuthStore()
-const index = useIndexStore()
 
-const fetching = ref<boolean>(false)
 const submit = async () => {
-  try {
-    fetching.value = true
-    const response: any = await axios.post('/api/post/store', form, {
-      headers: {
-        Authorization: getBearer,
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    await index.unshiftPosts(response.data)
-    await emit('close')
-    await captionStore.setCaption()
-  } catch (error: any) {
-    console.error(error)
-  } finally {
-    fetching.value = false
-  }
+  await createPost(form)
+  await emit('close')
 }
+
 const handleTextarea = () => {
   const textarea: any = document.querySelector('textarea')
   textarea.style.height = 'auto'
@@ -84,7 +67,7 @@ defineProps<{
 }>()
 </script>
 <template>
-  <div class="card w-[28rem] bg-neutral shadow-xl" ref="createPost">
+  <div class="card w-[28rem] bg-neutral shadow-xl" ref="createPostEl">
     <div class="border-b py-6 border-accent flex justify-between">
       <div class="px-6 font-bold text-2xl w-full text-center">Create Post</div>
       <div
@@ -131,7 +114,7 @@ defineProps<{
         </div>
         <button
           class="btn btn-secondary normal-case btn-block mx-auto mt-2"
-          :disabled="fetching"
+          :disabled="isFetching"
         >
           Post
         </button>

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const useUser = () => {
+export const useAuth = () => {
   const auth = useAuthStore()
   const isFetching = ref(false)
 

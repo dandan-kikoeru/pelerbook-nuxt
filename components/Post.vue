@@ -7,7 +7,7 @@ const auth = useAuthStore()
 const [showMenu, toggleMenu] = useToggle(false)
 const [showEditPost, toggleEditPost] = useToggle(false)
 const handleDeletePost = () => {
-  const { deletePost } = useDelete()
+  const { deletePost } = usePost()
   deletePost(post.id, index)
 }
 </script>
@@ -22,6 +22,7 @@ const handleDeletePost = () => {
             </div>
           </label>
         </NuxtLink>
+        {{ index }}
         <div>
           <p class="font-semibold">
             <NuxtLink :to="`/${post.user.id}`" class="hover:underline">

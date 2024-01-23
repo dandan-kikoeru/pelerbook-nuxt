@@ -2,7 +2,7 @@
 const { user } = useAuthStore()
 const { resetPosts } = useIndexStore()
 
-const { logout } = useUser()
+const { logout } = useAuth()
 
 const handleHomeButton = () => {
   window.scrollTo({

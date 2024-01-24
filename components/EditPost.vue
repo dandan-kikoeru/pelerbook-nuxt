@@ -16,6 +16,7 @@ const { data, index: postIndex } = defineProps<{
   data: Post
   index: any
 }>()
+
 const form: Form = reactive({
   caption: data.caption,
   image: data.image,
@@ -54,6 +55,9 @@ const handleRemoveFile = () => {
   imagePreviewUrl.value = ''
 }
 
+if (data.image) {
+  imagePreviewUrl.value = data.image
+}
 onMounted(() => {
   document.body.classList.add('overflow-hidden', 'mr-4')
   document.body.classList.remove('overflow-y-scroll')

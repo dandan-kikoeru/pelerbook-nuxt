@@ -7,6 +7,10 @@ definePageMeta({
   middleware: ['auth'],
 })
 
+useHead({
+  title: 'Pelerbook',
+})
+
 const target = ref<HTMLElement | null>(null)
 const isObserverActive = ref(true)
 useIntersectionObserver(target, ([{ isIntersecting }]) => {

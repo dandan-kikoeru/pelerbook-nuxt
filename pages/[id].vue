@@ -10,6 +10,10 @@ definePageMeta({
   middleware: ['auth'],
 })
 
+useHead({
+  title: 'Pelerbook',
+})
+
 if (!profile.profileId) {
   profile.setProfileId(route.params.id)
 }

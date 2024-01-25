@@ -1,6 +1,9 @@
 <script setup lang="ts">
 const emit = defineEmits()
 const editPostEl = ref(null)
+const textareaEl = ref<null | HTMLElement>(null)
+const fileInputEl = ref<any>(null)
+
 const { isFetching, editPost } = usePost()
 import type { Form, Post } from '~/types'
 
@@ -31,23 +34,22 @@ const handleTextarea = () => {
   textarea.style.height = 'auto'
   textarea.style.height = `${textarea.scrollHeight}px`
 }
-const fileInput = ref<any>(null)
 const imagePreviewUrl = ref<string | null>(null)
-const handleFileInput = () => {
+const handlefileInputEl = () => {
   if (
     !['image/png', 'image/jpeg', 'image/webp'].includes(
-      fileInput.value?.files[0].type,
+      fileInputEl.value?.files[0].type,
     )
   ) {
     return console.error('File format not supported')
   }
 
-  form.image = fileInput.value?.files[0]
+  form.image = fileInputEl.value?.files[0]
   imagePreviewUrl.value = URL.createObjectURL(form.image)
 }
 
-const openFileInput = () => {
-  fileInput.value.click()
+const openfileInputEl = () => {
+  fileInputEl.value.click()
 }
 
 const handleRemoveFile = () => {
@@ -58,10 +60,13 @@ const handleRemoveFile = () => {
 if (data.image) {
   imagePreviewUrl.value = data.image
 }
+
 onMounted(() => {
   document.body.classList.add('overflow-hidden', 'mr-4')
   document.body.classList.remove('overflow-y-scroll')
+  textareaEl.value ? textareaEl.value.focus() : ''
 })
+
 onUnmounted(() => {
   document.body.classList.remove('overflow-hidden', 'mr-4')
   document.body.classList.add('overflow-y-scroll')
@@ -83,6 +88,7 @@ onUnmounted(() => {
         <div class="flex gap-4 flex-col">
           <div class="overflow-y-auto max-h-96">
             <textarea
+              ref="textareaEl"
               v-model="form.caption"
               :placeholder="`What's on your mind, ${data.user.firstname}`"
               class="w-full bg-transparent outline-none resize-none"
@@ -100,15 +106,15 @@ onUnmounted(() => {
           </div>
           <div
             class="btn btn-ghost btn-circle text-2xl"
-            @click="openFileInput"
+            @click="openfileInputEl"
             v-if="!imagePreviewUrl"
           >
             <IconsPhoto />
           </div>
           <input
             type="file"
-            ref="fileInput"
-            @change="handleFileInput"
+            ref="fileInputEl"
+            @change="handlefileInputEl"
             accept=".jpg, .jpeg, .png, .webp"
             class="hidden"
           />

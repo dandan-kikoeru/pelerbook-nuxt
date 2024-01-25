@@ -32,7 +32,7 @@ const handleTextarea = () => {
   captionStore.setCaption(form.caption)
 }
 const imagePreviewUrl = ref<string | null>(null)
-const handlefileInputEl = () => {
+const handleFileInput = () => {
   if (
     !['image/png', 'image/jpeg', 'image/webp'].includes(
       fileInputEl.value?.files[0].type,
@@ -111,7 +111,7 @@ defineProps<{
           <input
             type="file"
             ref="fileInputEl"
-            @change="handlefileInputEl"
+            @change="handleFileInput"
             accept=".jpg, .jpeg, .png, .webp"
             class="hidden"
           />

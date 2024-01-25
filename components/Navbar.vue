@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { user } = useAuthStore()
+const { user } = storeToRefs(useAuthStore())
 const { resetPosts } = useIndexStore()
 
 const { logout } = useAuth()
@@ -12,15 +12,18 @@ const handleHomeButton = () => {
   resetPosts()
   navigateTo('/')
 }
-
 const [showMenu, toggleMenu] = useToggle(false)
 </script>
 <template>
   <div class="navbar bg-neutral border-b border-accent sticky top-0 z-20">
     <div class="flex-1">
-      <div class="btn btn-ghost text-xl btn-circle" @click="handleHomeButton">
+      <NuxtLink
+        to="/"
+        class="btn btn-ghost text-xl btn-circle"
+        @click="handleHomeButton"
+      >
         <img src="/logo.webp" />
-      </div>
+      </NuxtLink>
     </div>
     <div class="flex-none gap-2 relative">
       <label

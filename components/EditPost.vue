@@ -35,7 +35,7 @@ const handleTextarea = () => {
   textarea.style.height = `${textarea.scrollHeight}px`
 }
 const imagePreviewUrl = ref<string | null>(null)
-const handlefileInputEl = () => {
+const handleFileInput = () => {
   if (
     !['image/png', 'image/jpeg', 'image/webp'].includes(
       fileInputEl.value?.files[0].type,
@@ -114,7 +114,7 @@ onUnmounted(() => {
           <input
             type="file"
             ref="fileInputEl"
-            @change="handlefileInputEl"
+            @change="handleFileInput"
             accept=".jpg, .jpeg, .png, .webp"
             class="hidden"
           />

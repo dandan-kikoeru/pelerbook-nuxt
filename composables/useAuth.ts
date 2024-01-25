@@ -50,6 +50,7 @@ export const useAuth = () => {
 
   const logout = async () => {
     try {
+      isFetching.value = true
       await navigateTo('/login')
       await auth.setToken()
       await auth.setUser()

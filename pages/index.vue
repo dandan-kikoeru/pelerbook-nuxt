@@ -50,7 +50,7 @@ const captionStore = useCaptionStore()
     <Post
       v-for="(post, index) in posts"
       :post="post"
-      :key="post.id"
+      :key="`${post.id}-${index}`"
       :index="index"
     />
     <PostSkeleton v-if="isFetching" />

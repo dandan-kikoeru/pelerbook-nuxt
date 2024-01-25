@@ -12,13 +12,14 @@ export const usePost = () => {
   const deletePost = async (id: string, index?: number) => {
     try {
       isFetching.value = true
-      const response = await axios.post(`/api/post/destroy/${id}`, null, {
+      const response: any = await axios.post(`/api/post/destroy/${id}`, null, {
         headers: {
           Authorization: auth.getBearer,
         },
       })
       if (index !== undefined) {
-        await indexStore.posts.splice(index, 1)
+        await indexStore.splicePost(index)
+        await profileStore.splicePost(index)
       }
       if (route.params.postId) {
         await window.scrollTo({
@@ -28,15 +29,8 @@ export const usePost = () => {
         await indexStore.resetPosts()
         await navigateTo('/')
       }
-      if (route.params.id) {
-        await window.scrollTo({
-          top: 0,
-          behavior: 'smooth',
-        })
-        await profileStore.resetPosts()
-      }
     } catch (error: any) {
-      // console.error(error.response.status)
+      console.error(error)
     } finally {
       isFetching.value = false
     }
@@ -75,13 +69,7 @@ export const usePost = () => {
         },
       )
       await indexStore.setPostByIndex(response.data, postIndex)
-      if (route.params.id) {
-        await window.scrollTo({
-          top: 0,
-          behavior: 'smooth',
-        })
-        await profileStore.resetPosts()
-      }
+      await profileStore.setPostByIndex(response.data, postIndex)
       if (route.params.postId) {
         fetchPost.fetchPost()
       }

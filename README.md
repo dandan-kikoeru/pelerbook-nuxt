@@ -6,11 +6,12 @@ A Facebook clone build on [Nuxt 3](https://nuxt.com/docs/getting-started/introdu
 
 ## Todo
 
+- [ ] Code the like post process
+- [ ] Code the edit profile process
 - [ ] Work on the head meta
+- [ ] Maybe change the project name to be less ambiguous
 - [x] Code the create post so that it can preview uploaded image
 - [x] Code the edit post process
-- [ ] Code the like post process
-- [ ] Maybe change the project name to be less ambiguous
 
 ## Setup
 

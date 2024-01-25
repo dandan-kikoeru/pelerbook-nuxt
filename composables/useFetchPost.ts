@@ -39,6 +39,7 @@ export const useFetchPost = () => {
 
   const fetchProfile = async () => {
     try {
+      isFetching.value = true
       const responsePosts = await axios.get(
         `/api/profile/posts/${route.params.id}?page=${profile.pages}`,
         {
@@ -62,11 +63,14 @@ export const useFetchPost = () => {
     } catch (error: any) {
       console.error(error)
       navigateTo('/', { replace: true })
+    } finally {
+      isFetching.value = false
     }
   }
 
   const fetchPost = async () => {
     try {
+      isFetching.value = true
       const response: any = await axios.get(
         `/api/post/${route.params.postId}`,
         {
@@ -78,6 +82,8 @@ export const useFetchPost = () => {
       single.post = response.data.data
     } catch (error: any) {
       navigateTo('/', { replace: true })
+    } finally {
+      isFetching.value = false
     }
   }
   return { isFetching, fetchIndex, fetchProfile, profileData, fetchPost }

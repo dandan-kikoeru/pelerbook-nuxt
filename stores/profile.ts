@@ -13,6 +13,7 @@ export const useProfileStore = defineStore('profile', () => {
   const unshiftPosts = (data: Post) => {
     posts.value.unshift(data)
   }
+
   const incrementPage = () => {
     pages.value++
   }
@@ -34,6 +35,10 @@ export const useProfileStore = defineStore('profile', () => {
     posts.value[index] = data
   }
 
+  const splicePost = (index: number) => {
+    posts.value.splice(index, 1)
+  }
+
   return {
     posts,
     setPosts,
@@ -46,5 +51,6 @@ export const useProfileStore = defineStore('profile', () => {
     profileId,
     setProfileId,
     setPostByIndex,
+    splicePost,
   }
 })

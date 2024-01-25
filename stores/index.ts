@@ -31,6 +31,10 @@ export const useIndexStore = defineStore('index', () => {
     posts.value[index] = data
   }
 
+  const splicePost = (index: number) => {
+    posts.value.splice(index, 1)
+  }
+
   return {
     posts,
     setPosts,
@@ -41,5 +45,6 @@ export const useIndexStore = defineStore('index', () => {
     links,
     unshiftPosts,
     setPostByIndex,
+    splicePost,
   }
 })

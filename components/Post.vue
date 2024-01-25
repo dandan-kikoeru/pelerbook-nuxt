@@ -6,10 +6,7 @@ const auth = useAuthStore()
 
 const [showMenu, toggleMenu] = useToggle(false)
 const [showEditPost, toggleEditPost] = useToggle(false)
-const handleDeletePost = () => {
-  const { deletePost } = usePost()
-  deletePost(post.id, index)
-}
+const { deletePost, isFetching } = usePost()
 </script>
 <template>
   <div class="card max-w-lg bg-neutral mx-auto mt-4">
@@ -50,9 +47,11 @@ const handleDeletePost = () => {
           <li @click="toggleEditPost()">
             <button class="py-2 text-lg"><IconsEdit />Edit</button>
           </li>
-          <form @submit.prevent="handleDeletePost()">
+          <form @submit.prevent="deletePost(post.id, index)">
             <li>
-              <button class="py-2 text-lg"><IconsDelete />Delete</button>
+              <button class="py-2 text-lg" :disabled="isFetching">
+                <IconsDelete />Delete
+              </button>
             </li>
           </form>
         </Menu>

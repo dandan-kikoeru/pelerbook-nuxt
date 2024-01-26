@@ -16,26 +16,15 @@ export const useFetchPost = () => {
           Authorization: auth.getBearer,
         },
       })
-      await index.setPosts(response.data.data)
-      await index.setLinks(response.data.links)
-      await index.incrementPage()
+      index.setPosts(response.data.data)
+      index.setLinks(response.data.links)
+      // await index.incrementPage()
     } catch (error: any) {
       console.error(`${error.response.status}: ${error.response.data.message}`)
     } finally {
       isFetching.value = false
     }
   }
-
-  const defaultProfileData: User = reactive({
-    avatar: '/avatars/guest.webp',
-    firstname: 'John',
-    surname: 'Doe',
-    id: 0,
-    cover: '',
-    createdAt: new Date('1970-01-01T00:00:00.000Z'),
-  })
-
-  const profileData = ref<User | null>(defaultProfileData)
 
   const fetchProfile = async () => {
     try {
@@ -56,10 +45,10 @@ export const useFetchPost = () => {
           },
         },
       )
-      await profile.setLinks(responsePosts.data.links)
-      await profile.setPosts(responsePosts.data.data)
-      await profile.incrementPage()
-      profileData.value = responseProfile.data.data
+      profile.setLinks(responsePosts.data.links)
+      profile.setPosts(responsePosts.data.data)
+      // profile.incrementPage()
+      profile.setProfileData(responseProfile.data.data)
     } catch (error: any) {
       console.error(error)
       navigateTo('/', { replace: true })
@@ -86,5 +75,5 @@ export const useFetchPost = () => {
       isFetching.value = false
     }
   }
-  return { isFetching, fetchIndex, fetchProfile, profileData, fetchPost }
+  return { isFetching, fetchIndex, fetchProfile, fetchPost }
 }

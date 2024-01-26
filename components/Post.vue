@@ -12,12 +12,13 @@ const { deletePost, isFetching } = usePost()
   <div class="card max-w-lg bg-neutral mx-auto mt-4">
     <div class="card-body p-4">
       <div class="flex gap-1">
-        <NuxtLink :to="`/${post.user.id}`">
-          <label class="btn btn-ghost btn-circle avatar">
-            <div class="w-10 rounded-full">
-              <img :src="post.user.avatar" />
-            </div>
-          </label>
+        <NuxtLink
+          :to="`/${post.user.id}`"
+          class="btn btn-ghost btn-circle avatar"
+        >
+          <div class="w-10 rounded-full">
+            <img :src="post.user.avatar" />
+          </div>
         </NuxtLink>
         <div>
           <p class="font-semibold">

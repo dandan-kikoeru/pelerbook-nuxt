@@ -2,5 +2,5 @@
 definePageMeta({
   middleware: 'japanesegoblin',
 })
-console.log('lmao')
+console.error('lmao')
 </script>

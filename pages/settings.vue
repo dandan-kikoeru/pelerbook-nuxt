@@ -140,7 +140,7 @@ const handleCoverInput = () => {
         </div>
         <div>
           <div class="flex w-full my-2">
-            <p class="text-lg font-bold">Profile picture</p>
+            <p class="text-lg font-bold">Cover photo</p>
             <button
               class="btn btn-ghost text-primary normal-case"
               @click="openCover()"

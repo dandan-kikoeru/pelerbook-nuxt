@@ -1,19 +1,20 @@
-<script setup lang="ts">
-const emit = defineEmits()
-const createPostEl = ref(null)
+<script lang="ts" setup>
+import type { Form, User } from '~/types'
+
 const textareaEl = ref<null | HTMLElement>(null)
 const fileInputEl = ref<any>(null)
-import type { Form } from '~/types'
 const { isFetching, createPost } = usePost()
-onClickOutside(createPostEl, () => emit('close'))
+const captionStore = useCaptionStore()
+const emit = defineEmits()
+defineProps<{
+  user: User | null
+}>()
 
 useEventListener(document, 'keydown', (e) => {
   if (e.key === 'Escape') {
     emit('close')
   }
 })
-
-const captionStore = useCaptionStore()
 
 const form: Form = reactive({
   caption: captionStore.caption,
@@ -64,13 +65,13 @@ onUnmounted(() => {
   document.body.classList.remove('overflow-hidden', 'mr-4')
   document.body.classList.add('overflow-y-scroll')
 })
-
-defineProps<{
-  firstName: string | undefined
-}>()
 </script>
+
 <template>
-  <div class="card w-[28rem] bg-neutral shadow-xl" ref="createPostEl">
+  <div
+    class="card w-[28rem] bg-neutral shadow-xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+    ref="createPostEl"
+  >
     <div class="border-b py-6 border-accent flex justify-between">
       <div class="px-6 font-bold text-2xl w-full text-center">Create Post</div>
       <div
@@ -87,7 +88,7 @@ defineProps<{
             <textarea
               ref="textareaEl"
               v-model="form.caption"
-              :placeholder="`What's on your mind, ${firstName}`"
+              :placeholder="`What's on your mind, ${user?.firstname}`"
               class="w-full bg-transparent outline-none resize-none"
               @input="handleTextarea()"
             />

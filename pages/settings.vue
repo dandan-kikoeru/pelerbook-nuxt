@@ -11,8 +11,6 @@ useHead({
 const form: any = reactive({
   avatar: '',
   cover: '',
-  firstname: '',
-  surname: '',
 })
 const isFetching = ref(false)
 const submit = async () => {
@@ -37,6 +35,8 @@ const handleCancelPreview = () => {
   form.cover = ''
   avatarPreviewUrl.value = auth.user?.avatar
   coverPreviewUrl.value = auth.user?.cover
+  resetEdit()
+  isEditing.value = false
 }
 /**
  *  * AVATAR
@@ -81,24 +81,87 @@ const handleCoverInput = () => {
   form.cover = coverInputEl.value?.files[0]
   coverPreviewUrl.value = URL.createObjectURL(form.cover)
 }
+
+/**
+ *  * NAME
+ **/
+const isEditing = ref(false)
+const toggleEdit = () => {
+  !isEditing.value ? handleCancelPreview() : resetEdit()
+  isEditing.value = !isEditing.value
+}
+const resetEdit = () => {
+  formName.firstname = auth.user?.firstname
+  formName.surname = auth.user?.surname
+}
+const submitName = async () => {
+  try {
+    isFetching.value = true
+    const response = await axios.post('/api/user/update', formName, {
+      headers: {
+        Authorization: auth.getBearer,
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    auth.setUser(response.data)
+    toggleEdit()
+  } catch (error) {
+  } finally {
+    isFetching.value = false
+  }
+}
+const formName = reactive({
+  firstname: auth.user?.firstname,
+  surname: auth.user?.surname,
+})
 </script>
 <template>
   <div class="flex justify-center items-center min-h-screen flex-col">
     <div class="card w-96 md:w-[36rem] bg-neutral shadow-xl">
-      <div class="card-body gap-4">
-        <div>
-          <p class="text-lg font-bold my-2">Change name</p>
-          <input
-            type="text"
-            placeholder="First name"
-            class="input w-full bg-base-100 max-w-xs"
-          />
-          <input
-            type="text"
-            placeholder="Surname"
-            class="input bg-base-100 w-full max-w-xs"
-          />
+      <div class="card-body">
+        <div class="flex w-full">
+          <p class="text-lg font-bold">Profile picture</p>
+          <button
+            class="btn btn-ghost text-primary normal-case"
+            @click="toggleEdit()"
+          >
+            Edit
+          </button>
         </div>
+        <form @submit.prevent="submitName">
+          <div class="flex gap-4">
+            <input
+              name="firstname"
+              type="text"
+              placeholder="First name"
+              class="input w-full max-w-xs bg-base-100"
+              v-model="formName.firstname"
+              :disabled="!isEditing"
+            />
+            <input
+              name="surname"
+              type="text"
+              placeholder="Surname"
+              class="input w-full max-w-xs bg-base-100"
+              v-model="formName.surname"
+              :disabled="!isEditing"
+            />
+          </div>
+          <div v-if="isEditing" class="mt-4 flex justify-center">
+            <div
+              class="btn btn-ghost text-primary mr-2 btn-sm"
+              @click="toggleEdit()"
+            >
+              Cancel
+            </div>
+            <button
+              class="btn btn-primary text-white btn-sm w-24"
+              :disabled="isFetching"
+            >
+              Save
+            </button>
+          </div>
+        </form>
         <div class="flex flex-col items-center">
           <div class="flex w-full my-2">
             <p class="text-lg font-bold">Profile picture</p>

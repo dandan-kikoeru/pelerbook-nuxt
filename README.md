@@ -8,7 +8,7 @@ A Facebook clone build on [Nuxt 3](https://nuxt.com/docs/getting-started/introdu
 
 - [ ] Code the like post process
 - [ ] Code the edit profile process
-- [ ] Maybe change the project name to be less ambiguous
+- [ ] Migrate to nuxt/auth
 - [x] Code the create post so that it can preview uploaded image
 - [x] Code the edit post process
 - [x] Work on the head title

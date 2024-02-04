@@ -1,11 +1,10 @@
 export default defineNuxtPlugin(async (nuxtApp) => {
-  const auth = useAuthStore()
-  const { fetchUser } = useAuth()
-  if (!auth.isLoggedIn && auth.token) {
+  const { fetchUser, isLoggedIn } = useAuthStore()
+  if (!isLoggedIn) {
     try {
       await fetchUser()
-    } catch (error) {
-      console.error(error)
+    } catch (error: any) {
+      console.error(error.response.data.message)
     }
   }
 })

@@ -5,11 +5,8 @@ export default defineNuxtConfig({
   ssr: false,
   nitro: {
     routeRules: {
-      '/api/**': {
-        proxy: 'http://localhost:8000/api/**',
-      },
-      '/sanctum/csrf-cookie': {
-        proxy: 'http://localhost:8000/sanctum/csrf-cookie',
+      '/backend/**': {
+        proxy: 'http://localhost:8000/**',
       },
       '/avatars/**': {
         proxy: 'http://localhost:8000/avatars/**',

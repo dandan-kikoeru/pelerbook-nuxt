@@ -1,12 +1,16 @@
 <script setup lang="ts">
 const { posts, links, pages } = storeToRefs(useIndexStore())
 const index = useIndexStore()
-const { user } = useAuthStore()
+const { user, isLoggedIn } = useAuthStore()
 const { isFetching, fetchIndex } = useFetchPost()
 
-definePageMeta({
-  middleware: ['auth'],
-})
+// definePageMeta({
+//   middleware: 'auth',
+// })
+
+if (!isLoggedIn) {
+  navigateTo('/login', { replace: true })
+}
 
 useHead({
   title: 'Pelerbook',

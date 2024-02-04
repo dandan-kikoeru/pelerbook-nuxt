@@ -1,8 +1,4 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: false,
-  middleware: 'guest',
-})
 const [showRegister, toggleRegister] = useToggle()
 
 const form = reactive({
@@ -10,7 +6,15 @@ const form = reactive({
   password: 'password',
 })
 
-const { isFetching, login } = useAuth()
+const { isFetching, login, isLoggedIn } = await useAuthStore()
+definePageMeta({
+  layout: false,
+  // middleware: 'guest',
+})
+
+if (isLoggedIn) {
+  navigateTo('/', { replace: true })
+}
 </script>
 <template>
   <div class="flex justify-center items-center min-h-screen flex-col">

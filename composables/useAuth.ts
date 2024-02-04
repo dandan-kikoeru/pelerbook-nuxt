@@ -3,20 +3,13 @@ import axios from 'axios'
 export const useAuth = () => {
   const auth = useAuthStore()
   const isFetching = ref(false)
-
+  const { $axios } = useNuxtApp()
   const fetchUser = async () => {
     try {
-      isFetching.value = true
-      const response = await axios.get('/api/user', {
-        headers: {
-          Authorization: auth.getBearer,
-        },
-      })
+      const response = await $axios.get('/api/user')
       auth.setUser(response.data)
     } catch (error: any) {
-      auth.setToken()
-    } finally {
-      isFetching.value = false
+      // auth.setToken()
     }
   }
 

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import axios from 'axios'
 const auth = useAuthStore()
-definePageMeta({
-  middleware: ['auth'],
-})
+const { $axios } = useNuxtApp()
+
+if (!auth.isLoggedIn) {
+  navigateTo('/', { replace: true })
+}
 useHead({
   title: 'Pelerbook',
 })
@@ -16,9 +17,8 @@ const isFetching = ref(false)
 const submit = async () => {
   try {
     isFetching.value = true
-    const response = await axios.post('/api/user/update', form, {
+    const response = await $axios.post('/api/user/update', form, {
       headers: {
-        Authorization: auth.getBearer,
         'Content-Type': 'multipart/form-data',
       },
     })
@@ -97,12 +97,7 @@ const resetEdit = () => {
 const submitName = async () => {
   try {
     isFetching.value = true
-    const response = await axios.post('/api/user/update', formName, {
-      headers: {
-        Authorization: auth.getBearer,
-        'Content-Type': 'multipart/form-data',
-      },
-    })
+    const response = await $axios.post('/api/user/update', formName)
     auth.setUser(response.data)
     toggleEdit()
   } catch (error) {

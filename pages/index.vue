@@ -1,12 +1,8 @@
 <script setup lang="ts">
-const { posts, links, pages } = storeToRefs(useIndexStore())
+const { posts, links } = storeToRefs(useIndexStore())
 const index = useIndexStore()
-const { user, isLoggedIn } = useAuthStore()
+const { isLoggedIn } = useAuthStore()
 const { isFetching, fetchIndex } = useFetchPost()
-
-// definePageMeta({
-//   middleware: 'auth',
-// })
 
 if (!isLoggedIn) {
   navigateTo('/login', { replace: true })
@@ -15,6 +11,11 @@ if (!isLoggedIn) {
 useHead({
   title: 'Pelerbook',
 })
+
+const fetch = () => {
+  fetchIndex()
+  index.incrementPage()
+}
 
 const target = ref<HTMLElement | null>(null)
 const isObserverActive = ref(true)
@@ -26,13 +27,17 @@ useIntersectionObserver(target, ([{ isIntersecting }]) => {
   if (!links.value?.next) {
     isObserverActive.value = false
   }
-  fetchIndex()
-  index.incrementPage()
+  fetch()
+})
+
+watchArray(posts, () => {
+  if (posts.value.length === 0) {
+    fetch()
+  }
 })
 
 if (posts.value.length === 0) {
-  fetchIndex()
-  index.incrementPage()
+  fetch()
 }
 </script>
 <template>

@@ -15,16 +15,38 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const login = async (form: object) => {
-    await initCSRF
-    await $axios.post('/api/user/login', form)
-    await fetchUser()
-    navigateTo('/')
+    try {
+      isFetching.value = true
+      await initCSRF
+      await $axios.post('/api/user/login', form)
+      await fetchUser()
+      navigateTo('/')
+    } finally {
+      isFetching.value = false
+    }
   }
 
   const logout = async () => {
-    await $axios.post('/api/user/logout', null)
-    setUser()
-    navigateTo('/login')
+    try {
+      isFetching.value = true
+      await $axios.post('/api/user/logout', null)
+      setUser()
+      navigateTo('/login')
+    } finally {
+      isFetching.value = false
+    }
+  }
+
+  const register = async (form: object) => {
+    try {
+      isFetching.value = true
+      await initCSRF()
+      await $axios.post('/api/user/register', form)
+      await fetchUser()
+      navigateTo('/')
+    } finally {
+      isFetching.value = false
+    }
   }
 
   const isLoggedIn = computed(() => !!user.value)
@@ -39,7 +61,7 @@ export const useAuthStore = defineStore('auth', () => {
     isFetching,
     login,
     logout,
-    initCSRF,
+    register,
     fetchUser,
   }
 })

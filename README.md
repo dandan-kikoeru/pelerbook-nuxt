@@ -6,12 +6,7 @@ A Facebook clone build on [Nuxt 3](https://nuxt.com/docs/getting-started/introdu
 
 ## Todo
 
-- [ ] Work on auth
 - [ ] Code the like post process
-- [ ] Code the edit profile process
-- [x] Code the create post so that it can preview uploaded image
-- [x] Code the edit post process
-- [x] Work on the head title
 
 ## Setup
 

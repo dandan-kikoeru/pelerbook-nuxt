@@ -15,7 +15,7 @@ const form = reactive({
   email: '',
   password: '',
 })
-const { isFetching, register } = useAuth()
+const { isFetching, register } = useAuthStore()
 </script>
 <template>
   <div class="card w-[28rem] bg-neutral shadow-xl" ref="registerEl">

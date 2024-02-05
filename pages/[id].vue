@@ -3,12 +3,12 @@ const profile = useProfileStore()
 const { posts, profileData, links } = storeToRefs(useProfileStore())
 
 const { isFetching, fetchProfile } = useFetchPost()
-const { user } = useAuthStore()
+const { user, isLoggedIn } = useAuthStore()
 const route: any = useRoute()
 
-definePageMeta({
-  middleware: ['auth'],
-})
+if (!isLoggedIn) {
+  navigateTo('/login', { replace: true })
+}
 
 useHead({
   title: 'Pelerbook',

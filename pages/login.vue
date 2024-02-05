@@ -9,7 +9,6 @@ const form = reactive({
 const { isFetching, login, isLoggedIn } = await useAuthStore()
 definePageMeta({
   layout: false,
-  // middleware: 'guest',
 })
 
 if (isLoggedIn) {

@@ -1,4 +1,3 @@
-import type { User } from '~/types'
 export const useFetchPost = () => {
   const { $axios } = useNuxtApp()
   const index = useIndexStore()

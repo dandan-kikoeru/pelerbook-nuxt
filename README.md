@@ -4,10 +4,6 @@ A Facebook clone build on [Nuxt 3](https://nuxt.com/docs/getting-started/introdu
 
 👉 [Laravel 10 RESTful API repo](https://github.com/dandan-kikoeru/pelerbook-api)
 
-## Todo
-
-- [ ] Code the like post process
-
 ## Setup
 
 Make sure to install the dependencies:

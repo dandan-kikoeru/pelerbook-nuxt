@@ -13,16 +13,16 @@ export const usePost = () => {
       isFetching.value = true
       await $axios.post(`/api/post/destroy/${id}`)
       if (index !== undefined) {
-        await indexStore.splicePost(index)
-        await profileStore.splicePost(index)
+        indexStore.splicePost(index)
+        profileStore.splicePost(index)
       }
       if (route.params.postId) {
-        await window.scrollTo({
+        window.scrollTo({
           top: 0,
           behavior: 'smooth',
         })
-        await indexStore.resetPosts()
-        await navigateTo('/')
+        indexStore.resetPosts()
+        navigateTo('/')
       }
     } finally {
       isFetching.value = false
@@ -37,15 +37,15 @@ export const usePost = () => {
           'Content-Type': 'multipart/form-data',
         },
       })
-      await indexStore.unshiftPosts(response.data)
-      await profileStore.unshiftPosts(response.data)
-      await captionStore.setCaption()
+      indexStore.unshiftPosts(response.data)
+      profileStore.unshiftPosts(response.data)
+      captionStore.setCaption()
     } finally {
       isFetching.value = false
     }
   }
 
-  const editPost = async (form: Object, postIndex: number, data: Post) => {
+  const editPost = async (form: Object, index: number, data: Post) => {
     try {
       isFetching.value = true
       const response: any = await $axios.post(
@@ -57,15 +57,31 @@ export const usePost = () => {
           },
         },
       )
-      await indexStore.setPostByIndex(response.data, postIndex)
-      await profileStore.setPostByIndex(response.data, postIndex)
+      indexStore.setPostByIndex(response.data, index)
+      profileStore.setPostByIndex(response.data, index)
       if (route.params.postId) {
-        fetchPost()
+        await fetchPost()
       }
     } finally {
       isFetching.value = false
     }
   }
 
-  return { isFetching, deletePost, createPost, editPost }
+  const likePost = async (id: string, index?: number) => {
+    try {
+      isFetching.value = true
+      const response: any = await $axios.post(`/api/like/${id}`)
+      if (index !== undefined) {
+        indexStore.setPostByIndex(response.data, index)
+        profileStore.setPostByIndex(response.data, index)
+      }
+      if (route.params.postId) {
+        await fetchPost()
+      }
+    } finally {
+      isFetching.value = false
+    }
+  }
+
+  return { isFetching, deletePost, createPost, editPost, likePost }
 }

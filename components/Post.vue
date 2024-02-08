@@ -6,7 +6,7 @@ const auth = useAuthStore()
 
 const [showMenu, toggleMenu] = useToggle(false)
 const [showEditPost, toggleEditPost] = useToggle(false)
-const { deletePost, isFetching } = usePost()
+const { deletePost, likePost, isFetching } = usePost()
 </script>
 <template>
   <div class="card max-w-lg bg-neutral mx-auto mt-4">
@@ -58,7 +58,29 @@ const { deletePost, isFetching } = usePost()
         </Menu>
       </div>
       <p class="mt-3" v-html="post.caption" />
-      <img :src="post.image" v-if="post.image" class="rounded-xl" />
+      <img :src="post.image" v-if="post.image" class="rounded-xl mb-4" />
+      <div v-if="post.likes" class="text-primary flex items-center gap-1">
+        <IconsLiked /> {{ post.likes }}
+      </div>
+      <form
+        @submit.prevent="likePost(post.id, index)"
+        class="border-accent border-y py-1"
+      >
+        <button
+          class="btn btn-ghost btn-block flex items-center text-lg"
+          v-if="!post.likedByUser"
+          :disabled="isFetching"
+        >
+          <IconsLike /> Like
+        </button>
+        <button
+          class="btn btn-ghost btn-block flex items-center text-lg text-primary"
+          v-if="post.likedByUser"
+          :disabled="isFetching"
+        >
+          <IconsLiked /> Liked
+        </button>
+      </form>
     </div>
   </div>
   <div v-if="showEditPost" class="bg-black/50 fixed top-0 w-full h-full z-30">

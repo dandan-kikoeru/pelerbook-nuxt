@@ -21,6 +21,8 @@ export interface Post {
   likedByUser: boolean
   image: string
   user: User
+  commentsCount: number
+  comments: Comment[]
 }
 
 export interface Meta {
@@ -50,4 +52,11 @@ export interface Link {
 export interface Form {
   caption?: string
   image?: any
+}
+
+export interface Comment {
+  content: string
+  id: string
+  user: User
+  createdAt: Date
 }

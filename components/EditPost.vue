@@ -30,9 +30,10 @@ const submit = async () => {
   await emit('close')
 }
 const handleTextarea = () => {
-  const textarea: any = document.querySelector('textarea')
-  textarea.style.height = 'auto'
-  textarea.style.height = `${textarea.scrollHeight}px`
+  if (textareaEl.value) {
+    textareaEl.value.style.height = 'auto'
+    textareaEl.value.style.height = `${textareaEl.value.scrollHeight}px`
+  }
 }
 const imagePreviewUrl = ref<string | null>(null)
 const handleFileInput = () => {
@@ -65,6 +66,7 @@ onMounted(() => {
   document.body.classList.add('overflow-hidden', 'mr-4')
   document.body.classList.remove('overflow-y-scroll')
   textareaEl.value ? textareaEl.value.focus() : ''
+  handleTextarea()
 })
 
 onUnmounted(() => {

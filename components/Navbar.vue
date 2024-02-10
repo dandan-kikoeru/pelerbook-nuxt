@@ -13,6 +13,7 @@ const handleHomeButton = () => {
   navigateTo('/')
 }
 const [showMenu, toggleMenu] = useToggle(false)
+const menuBtn = ref()
 </script>
 <template>
   <div class="navbar bg-neutral border-b border-accent sticky top-0 z-20">
@@ -31,7 +32,7 @@ const [showMenu, toggleMenu] = useToggle(false)
         class="btn btn-ghost btn-circle avatar"
         @click="toggleMenu()"
       >
-        <div class="w-10 rounded-full">
+        <div class="w-10 rounded-full" ref="menuBtn">
           <img :src="user?.avatar" />
         </div>
       </label>
@@ -39,6 +40,7 @@ const [showMenu, toggleMenu] = useToggle(false)
         v-if="showMenu"
         class="absolute top-10 right-2 w-80"
         @close="toggleMenu()"
+        :menuBtn="menuBtn"
       >
         <li>
           <NuxtLink class="py-2 text-lg" :to="`${user?.id}`">

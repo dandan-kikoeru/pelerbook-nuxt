@@ -4,10 +4,6 @@ const index = useIndexStore()
 const { isLoggedIn } = useAuthStore()
 const { isFetching, fetchIndex } = useFetchPost()
 
-if (!isLoggedIn) {
-  navigateTo('/login', { replace: true })
-}
-
 useHead({
   title: 'Pelerbook',
 })
@@ -17,6 +13,12 @@ const fetch = () => {
   index.incrementPage()
 }
 
+isLoggedIn
+  ? posts.value.length === 0
+    ? fetch()
+    : ''
+  : navigateTo('/login', { replace: true })
+
 const target = ref<HTMLElement | null>(null)
 const isObserverActive = ref(true)
 useIntersectionObserver(target, ([{ isIntersecting }]) => {
@@ -24,21 +26,13 @@ useIntersectionObserver(target, ([{ isIntersecting }]) => {
     return
   }
 
-  if (!links.value?.next) {
-    isObserverActive.value = false
-  }
+  !links.value?.next ? (isObserverActive.value = false) : ''
   fetch()
 })
 
 watchArray(posts, () => {
-  if (posts.value.length === 0) {
-    fetch()
-  }
+  posts.value.length === 0 ? fetch() : ''
 })
-
-if (posts.value.length === 0) {
-  fetch()
-}
 </script>
 <template>
   <CreatePostEl />

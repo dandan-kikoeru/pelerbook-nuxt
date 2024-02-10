@@ -3,7 +3,7 @@ const emit = defineEmits()
 const createPostEl = ref(null)
 const { user } = useAuthStore()
 onClickOutside(createPostEl, () => toggleCreatePost())
-const { caption } = useCaptionStore()
+const { caption } = storeToRefs(useCaptionStore())
 
 const removeNewLine = (input: string | undefined) => {
   if (input !== undefined) {

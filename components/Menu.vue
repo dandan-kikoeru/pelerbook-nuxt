@@ -7,7 +7,20 @@ useEventListener(document, 'keydown', (e) => {
   }
 })
 const menu = ref<HTMLElement | null>(null)
-onClickOutside(menu, (e) => emit('close'))
+onClickOutside(menu, (e: any) => {
+  if (e.target === menuBtn || e.target.parentElement === menuBtn) {
+    // console.log(e.target === menuBtn)
+    // console.log(e.target.parentElement === menuBtn)
+    emit('close')
+  }
+  emit('close')
+  // console.log(e.target)
+  // console.log(e.target.parentElement)
+  // console.log(menuBtn)
+})
+const { menuBtn } = defineProps<{
+  menuBtn: HTMLElement
+}>()
 </script>
 <template>
   <ul

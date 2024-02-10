@@ -1,6 +1,7 @@
 import type { Links, Post, User } from '~/types'
 
 export const useProfileStore = defineStore('profile', () => {
+  const indexStore = useIndexStore()
   const defaultLinksValue: Links = {
     first: '',
     last: '',

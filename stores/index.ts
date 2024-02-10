@@ -1,6 +1,7 @@
 import type { Links, Post } from '~/types'
 
 export const useIndexStore = defineStore('index', () => {
+  const profileStore = useProfileStore()
   const posts = ref<Post[]>([])
   const pages = ref<number>(1)
   const links = ref<Links>()
@@ -17,10 +18,8 @@ export const useIndexStore = defineStore('index', () => {
   }
 
   const resetPosts = () => {
-    setTimeout(() => {
-      posts.value = []
-      pages.value = 1
-    }, 500)
+    posts.value = []
+    pages.value = 1
   }
 
   const setLinks = (data: Links) => {

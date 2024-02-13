@@ -4,7 +4,7 @@ const single = useSingleStore()
 await fetchPost()
 
 useHead({
-  title: `${single.post?.user.firstname} ${single.post?.user.surname} - ${truncate(single.post?.caption, 63)} | Pelerbook`,
+  title: `${single.post?.user.firstname} ${single.post?.user.surname} - ${truncate(single.post?.caption)} | Pelerbook`,
 })
 </script>
 <template>

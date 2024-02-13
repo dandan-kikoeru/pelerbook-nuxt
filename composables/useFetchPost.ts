@@ -1,18 +1,19 @@
 export const useFetchPost = () => {
   const { $axios } = useNuxtApp()
-  const index = useIndexStore()
   const isFetching = ref(false)
   const route: any = useRoute()
-  const profile = useProfileStore()
-  const single = useSingleStore()
+  const indexStore = useIndexStore()
+  const profileStore = useProfileStore()
+  const singleStore = useSingleStore()
 
   const fetchIndex = async () => {
     try {
       isFetching.value = true
-      const response: any = await $axios.get(`/api/post?page=${index.pages}`)
-      index.setPosts(response.data.data)
-      index.setLinks(response.data.links)
-      // index.incrementPage()
+      const response: any = await $axios.get(
+        `/api/post?page=${indexStore.pages}`,
+      )
+      indexStore.push(response.data.data)
+      indexStore.setLinks(response.data.links)
     } catch (error: any) {
       console.error(`${error.response.status}: ${error.response.data.message}`)
     } finally {
@@ -24,15 +25,14 @@ export const useFetchPost = () => {
     try {
       isFetching.value = true
       const responsePosts = await $axios.get(
-        `/api/profile/posts/${route.params.id}?page=${profile.pages}`,
+        `/api/profile/posts/${route.params.id}?page=${profileStore.pages}`,
       )
       const responseProfile = await $axios.get(
         `/api/profile/${route.params.id}`,
       )
-      profile.setLinks(responsePosts.data.links)
-      profile.setPosts(responsePosts.data.data)
-      // profile.incrementPage()
-      profile.setProfileData(responseProfile.data.data)
+      profileStore.setLinks(responsePosts.data.links)
+      profileStore.push(responsePosts.data.data)
+      profileStore.setProfileData(responseProfile.data.data)
     } catch (error: any) {
       console.error(error)
       navigateTo('/', { replace: true })
@@ -45,7 +45,7 @@ export const useFetchPost = () => {
     try {
       isFetching.value = true
       const response: any = await $axios.get(`/api/post/${route.params.postId}`)
-      single.post = response.data.data
+      singleStore.setPost(response.data.data)
     } catch (error: any) {
       navigateTo('/', { replace: true })
     } finally {

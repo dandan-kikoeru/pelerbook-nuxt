@@ -6,13 +6,22 @@ const form = reactive({
   password: 'password',
 })
 
-const { isFetching, login, isLoggedIn } = await useAuthStore()
+const auth = useAuthStore()
+const { isFetching, isLoggedIn } = storeToRefs(auth)
 definePageMeta({
   layout: false,
 })
 
-if (isLoggedIn) {
+if (isLoggedIn.value) {
   navigateTo('/', { replace: true })
+}
+
+const submit = async () => {
+  try {
+    await auth.login(form)
+  } catch (error: any) {
+    error.response.status === 401 ? await auth.login(form) : -1
+  }
 }
 </script>
 <template>
@@ -24,7 +33,7 @@ if (isLoggedIn) {
         peler.
       </p>
     </div>
-    <form @submit.prevent="login(form)">
+    <form @submit.prevent="submit">
       <div class="card w-96 bg-neutral shadow-xl">
         <div class="card-body gap-4">
           <input

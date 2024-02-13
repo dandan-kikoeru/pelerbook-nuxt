@@ -1,14 +1,13 @@
-<script lang="ts" setup>
-import type { Form, User } from '~/types'
-
+<script setup lang="ts">
+const emit = defineEmits()
+const editPostEl = ref(null)
 const textareaEl = ref<null | HTMLElement>(null)
 const fileInputEl = ref<any>(null)
-const { isFetching, createPost } = usePost()
-const captionStore = useCaptionStore()
-const emit = defineEmits()
-defineProps<{
-  user: User | null
-}>()
+
+const { isFetching, editPost } = usePost()
+import type { Form, Post } from '~/types'
+
+onClickOutside(editPostEl, () => emit('close'))
 
 useEventListener(document, 'keydown', (e) => {
   if (e.key === 'Escape') {
@@ -16,22 +15,27 @@ useEventListener(document, 'keydown', (e) => {
   }
 })
 
+const { data } = defineProps<{
+  data: Post
+}>()
+
 const form: Form = reactive({
-  caption: captionStore.caption,
-  image: '',
+  caption: data.caption,
+  image: data.image,
 })
+const isEmpty = computed(() => /^\s*$/.test(form.caption))
 
 const submit = async () => {
-  await createPost(form)
-  await emit('close')
+  if (!isEmpty.value) {
+    await editPost(form, data.id)
+    await emit('close')
+  }
 }
-
 const handleTextarea = () => {
   if (textareaEl.value) {
     textareaEl.value.style.height = 'auto'
     textareaEl.value.style.height = `${textareaEl.value.scrollHeight}px`
   }
-  captionStore.setCaption(form.caption)
 }
 const imagePreviewUrl = ref<string | null>(null)
 const handleFileInput = () => {
@@ -56,6 +60,10 @@ const handleRemoveFile = () => {
   imagePreviewUrl.value = ''
 }
 
+if (data.image) {
+  imagePreviewUrl.value = data.image
+}
+
 onMounted(() => {
   document.body.classList.add('overflow-hidden', 'mr-4')
   document.body.classList.remove('overflow-y-scroll')
@@ -68,14 +76,10 @@ onUnmounted(() => {
   document.body.classList.add('overflow-y-scroll')
 })
 </script>
-
 <template>
-  <div
-    class="card w-[28rem] bg-neutral shadow-xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-    ref="createPostEl"
-  >
+  <div class="card w-[28rem] bg-neutral shadow-xl" ref="editPostEl">
     <div class="border-b py-6 border-accent flex justify-between">
-      <div class="px-6 font-bold text-2xl w-full text-center">Create Post</div>
+      <div class="px-6 font-bold text-2xl w-full text-center">Edit Post</div>
       <div
         @click="$emit('close')"
         class="btn btn-circle btn-accent btn-sm mr-4 cursor-pointer h-fit absolute right-1 text-2xl"
@@ -90,9 +94,10 @@ onUnmounted(() => {
             <textarea
               ref="textareaEl"
               v-model="form.caption"
-              :placeholder="`What's on your mind, ${user?.firstname}`"
+              :placeholder="`What's on your mind, ${data.user.firstname}`"
               class="w-full bg-transparent outline-none resize-none"
               @input="handleTextarea()"
+              @keydown.enter.exact.prevent="submit"
             />
             <div v-if="imagePreviewUrl" class="relative m-4">
               <div
@@ -121,9 +126,9 @@ onUnmounted(() => {
         </div>
         <button
           class="btn btn-secondary normal-case btn-block mx-auto mt-2"
-          :disabled="isFetching"
+          :disabled="isFetching || isEmpty"
         >
-          Post
+          Edit
         </button>
       </form>
     </div>

@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 const emit = defineEmits()
-const createPostEl = ref(null)
+const postCreateModalEl = ref(null)
 const { user } = useAuthStore()
-onClickOutside(createPostEl, () => toggleCreatePost())
+onClickOutside(postCreateModalEl, () => toggleCreatePost())
 const { caption } = storeToRefs(useCaptionStore())
 
 const removeNewLine = (input: string | undefined) => {
@@ -29,6 +29,10 @@ const [showCreatePost, toggleCreatePost] = useToggle(false)
     />
   </div>
   <div v-if="showCreatePost" class="bg-black/50 fixed top-0 w-full h-full z-30">
-    <CreatePost :user="user" @close="toggleCreatePost()" ref="createPostEl" />
+    <PostCreateModal
+      :user="user"
+      @close="toggleCreatePost()"
+      ref="postCreateModalEl"
+    />
   </div>
 </template>

@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import type { Post } from '~/types'
 
-const { post, index } = defineProps<{ post: Post; index?: number }>()
+const { post } = defineProps<{ post: Post }>()
 const auth = useAuthStore()
 const route: any = useRoute()
 
 const [showMenu, toggleMenu] = useToggle(false)
 const [showEditPost, toggleEditPost] = useToggle(false)
 const { deletePost, likePost, isFetching } = usePost()
-const commentPostEl = ref()
+const commentCreateEl = ref()
 const focus = () => {
-  commentPostEl.value.textarea.focus()
-  commentPostEl.value.peer()
+  commentCreateEl.value.textarea.focus()
+  commentCreateEl.value.peer()
 }
 const menuBtn = ref()
 </script>
@@ -57,7 +57,7 @@ const menuBtn = ref()
           <li @click="toggleEditPost()">
             <button class="py-2 text-lg"><IconsEdit />Edit</button>
           </li>
-          <form @submit.prevent="deletePost(post.id, index)">
+          <form @submit.prevent="deletePost(post.id)">
             <li>
               <button class="py-2 text-lg" :disabled="isFetching">
                 <IconsDelete />Delete
@@ -66,7 +66,7 @@ const menuBtn = ref()
           </form>
         </Menu>
       </div>
-      <p class="mt-3" v-html="post.caption" />
+      <p class="mt-3" v-html="formatText(post.caption)" />
       <img :src="post.image" v-if="post.image" class="rounded-xl mb-4" />
       <div class="relative h-6">
         <div
@@ -81,7 +81,7 @@ const menuBtn = ref()
         </div>
       </div>
       <div class="border-accent border-y py-1 flex">
-        <form @submit.prevent="likePost(post.id, index)" class="w-full">
+        <form @submit.prevent="likePost(post.id)" class="w-full">
           <button
             class="btn btn-ghost btn-block text-base"
             :class="post.likedByUser ? 'text-primary' : ''"
@@ -110,9 +110,8 @@ const menuBtn = ref()
         >
           <Comment
             :comment="comment"
-            class="my-2"
             :key="`${comment.id}-${index}`"
-            :id="comment.id"
+            :index="index"
           />
         </div>
         <div>
@@ -124,21 +123,20 @@ const menuBtn = ref()
           >
           <Comment
             :comment="post.comments[post.commentsCount - 1]"
-            class="mt-2"
             v-if="post.commentsCount && !route.params.postId"
+            :index="-1"
           />
         </div>
-        <CommentPostEl :id="post.id" ref="commentPostEl" :index="index" />
+        <CommentCreate :post-id="post.id" ref="commentCreateEl" />
       </div>
     </div>
   </div>
   <div v-if="showEditPost" class="bg-black/50 fixed top-0 w-full h-full z-30">
-    <EditPost
+    <PostEditModal
       @close="toggleEditPost"
       class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       :firstName="auth.user?.firstname"
       :data="post"
-      :index="index"
     />
   </div>
 </template>

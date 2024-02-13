@@ -1,4 +1,4 @@
-import type { Links, Post, User } from '~/types'
+import type { Links, Post, User, Comment } from '~/types'
 
 export const useProfileStore = defineStore('profile', () => {
   const indexStore = useIndexStore()
@@ -13,11 +13,15 @@ export const useProfileStore = defineStore('profile', () => {
   const links = ref<Links>(defaultLinksValue)
   const profileId = ref<any>()
 
-  const setPosts = (data?: any) => {
+  const push = (data?: any) => {
     posts.value.push(...data)
   }
 
-  const unshiftPosts = (data: Post) => {
+  const getPostIndexById = (id: string): number => {
+    return posts.value.findIndex((post) => post.id === id)
+  }
+
+  const unshift = (data: Post) => {
     posts.value.unshift(data)
   }
 
@@ -25,7 +29,7 @@ export const useProfileStore = defineStore('profile', () => {
     pages.value++
   }
 
-  const resetPosts = () => {
+  const reset = () => {
     setLinks(defaultLinksValue)
     posts.value = []
     pages.value = 1
@@ -39,12 +43,12 @@ export const useProfileStore = defineStore('profile', () => {
     profileId.value = data
   }
 
-  const setPostByIndex = (data: Post, index: number) => {
-    posts.value[index] = data
+  const setPost = (data: Post, id: string) => {
+    posts.value[getPostIndexById(id)] = data
   }
 
-  const splicePost = (index: number) => {
-    posts.value.splice(index, 1)
+  const splice = (id: string) => {
+    posts.value.splice(getPostIndexById(id), 1)
   }
 
   const defaultProfileData: User = reactive({
@@ -62,20 +66,63 @@ export const useProfileStore = defineStore('profile', () => {
     profileData.value = data
   }
 
+  const setComment = (comment: Comment, id: string) => {
+    const index = getPostIndexById(id)
+    if (index === -1) {
+      return
+    }
+    const post = posts.value[index]
+    post.comments[post.commentsCount - 1] = comment
+  }
+
+  const pushComment = (comment: Comment, id: string) => {
+    const index = getPostIndexById(id)
+    if (index === -1) {
+      return
+    }
+    const post = posts.value[index]
+    post.comments.push(comment)
+    post.commentsCount++
+  }
+
+  const getCommentIndexById = (commentId: string, postIndex: number) => {
+    return posts.value[postIndex].comments.findIndex(
+      (comment) => comment.id === commentId,
+    )
+  }
+
+  const spliceComment = (comment: Comment) => {
+    const postIndex = getPostIndexById(comment.postId)
+    if (postIndex === -1) {
+      return
+    }
+    const commentIndex = getCommentIndexById(comment.id, postIndex)
+    if (commentIndex === -1) {
+      return
+    }
+    posts.value[postIndex].comments.splice(commentIndex, 1)
+    posts.value[postIndex].commentsCount--
+  }
+
   return {
     posts,
-    setPosts,
+    push,
     pages,
     incrementPage,
-    resetPosts,
+    reset,
     setLinks,
     links,
-    unshiftPosts,
+    unshift,
     profileId,
     setProfileId,
-    setPostByIndex,
-    splicePost,
+    setPost,
+    splice,
     profileData,
     setProfileData,
+    getPostIndexById,
+    setComment,
+    pushComment,
+    defaultProfileData,
+    spliceComment,
   }
 })

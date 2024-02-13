@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const profile = useProfileStore()
-const { posts, profileData, links } = storeToRefs(useProfileStore())
-
+const { posts, profileData, links } = storeToRefs(profile)
 const { isFetching, fetchProfile } = useFetchPost()
 const { user, isLoggedIn } = useAuthStore()
 const route: any = useRoute()
@@ -20,7 +19,7 @@ if (!profile.profileId) {
 
 if (route.params.id !== profile.profileId) {
   profile.setProfileId(route.params.id)
-  profile.resetPosts()
+  profile.reset()
 }
 
 const target = ref<HTMLElement | null>(null)
@@ -70,15 +69,12 @@ useIntersectionObserver(target, ([{ isIntersecting }]) => {
       {{ useDateFormat(profileData?.createdAt, 'MMM YYYY').value }}
     </div>
   </div>
-  <div v-if="route.params.id == user?.id">
-    <CreatePostEl />
-  </div>
+  <PostCreate v-if="route.params.id == user?.id" />
   <div class="mb-4">
     <Post
       v-for="(post, index) in posts"
       :post="post"
       :key="`${post.id}-${index}`"
-      :index="index"
     />
     <PostSkeleton v-if="isFetching" />
   </div>

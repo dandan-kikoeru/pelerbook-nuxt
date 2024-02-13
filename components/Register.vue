@@ -16,10 +16,17 @@ const form = reactive({
   password: '',
 })
 const { isFetching, register } = useAuthStore()
+const submit = async () => {
+  try {
+    await register(form)
+  } catch (error: any) {
+    error.response.status === 401 ? await register(form) : -1
+  }
+}
 </script>
 <template>
   <div class="card w-[28rem] bg-neutral shadow-xl" ref="registerEl">
-    <form @submit.prevent="register(form)">
+    <form @submit.prevent="submit">
       <div class="border-b py-6 border-accent flex justify-between">
         <div class="px-6">
           <p class="font-bold text-2xl">Sign up</p>

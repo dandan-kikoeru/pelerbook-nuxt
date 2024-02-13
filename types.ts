@@ -15,9 +15,9 @@ export interface Posts {
 
 export interface Post {
   caption: string
-  createdAt: string
+  createdAt: Date
   id: string
-  likes: BigInteger
+  likes: number
   likedByUser: boolean
   image: string
   user: User
@@ -50,8 +50,8 @@ export interface Link {
 }
 
 export interface Form {
-  caption?: string
-  image?: any
+  caption: string
+  image: any
 }
 
 export interface Comment {
@@ -59,4 +59,7 @@ export interface Comment {
   id: string
   user: User
   createdAt: Date
+  postId: string
+  likes: number
+  likedByUser: boolean
 }

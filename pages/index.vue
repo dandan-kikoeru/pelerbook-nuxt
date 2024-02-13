@@ -1,6 +1,6 @@
 <script setup lang="ts">
-const { posts, links } = storeToRefs(useIndexStore())
 const index = useIndexStore()
+const { posts, links } = storeToRefs(index)
 const { isLoggedIn } = useAuthStore()
 const { isFetching, fetchIndex } = useFetchPost()
 
@@ -35,13 +35,12 @@ watchArray(posts, () => {
 })
 </script>
 <template>
-  <CreatePostEl />
+  <PostCreate />
   <div class="mb-4">
     <Post
       v-for="(post, index) in posts"
       :post="post"
       :key="`${post.id}-${index}`"
-      :index="index"
     />
     <PostSkeleton v-if="isFetching" />
   </div>

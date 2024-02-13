@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { user } = storeToRefs(useAuthStore())
-const { resetPosts } = useIndexStore()
+const { reset } = useIndexStore()
 
 const { logout } = useAuthStore()
 
@@ -9,7 +9,7 @@ const handleHomeButton = () => {
     top: 0,
     behavior: 'smooth',
   })
-  resetPosts()
+  reset()
   navigateTo('/')
 }
 const [showMenu, toggleMenu] = useToggle(false)
@@ -43,12 +43,16 @@ const menuBtn = ref()
         :menuBtn="menuBtn"
       >
         <li>
-          <NuxtLink class="py-2 text-lg" :to="`${user?.id}`">
+          <NuxtLink
+            class="py-2 text-lg"
+            :to="`${user?.id}`"
+            @click="toggleMenu()"
+          >
             <IconsProfile />{{ user?.firstname }} {{ user?.surname }}
           </NuxtLink>
         </li>
         <li>
-          <NuxtLink class="py-2 text-lg" to="/settings">
+          <NuxtLink class="py-2 text-lg" to="/settings" @click="toggleMenu()">
             <IconsSettings />Settings
           </NuxtLink>
         </li>

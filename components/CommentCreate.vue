@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const { user } = useAuthStore()
-const { id, index } = defineProps<{ id: string; index?: number }>()
+const { postId } = defineProps<{ postId: string }>()
 const textarea = ref<HTMLElement | null>(null)
 const form = reactive({
   content: '',
@@ -12,6 +12,9 @@ const handleTextarea = () => {
     textarea.value.style.height = `${textarea.value.scrollHeight}px`
   }
 }
+
+const isEmpty = computed(() => /^\s*$/.test(form.content))
+
 const peerSelected = ref(false)
 const el = ref(null)
 const peer = () => {
@@ -21,12 +24,13 @@ onClickOutside(el, () => (peerSelected.value = false))
 const { isFetching, createComment } = useComment()
 const submit = async () => {
   try {
-    await createComment(form, id, index)
+    await createComment(form, postId)
     form.content = ''
   } catch (error: any) {
     console.error(error.response.data.message)
   }
 }
+
 defineExpose({
   textarea,
   peer,
@@ -43,14 +47,15 @@ defineExpose({
       </NuxtLink>
     </div>
     <div class="bg-accent rounded-2xl w-full" ref="el">
-      <form @submit.prevent="submit">
+      <form @submit.prevent="submit()">
         <textarea
           ref="textarea"
           v-model="form.content"
           class="bg-transparent outline-none py-2 px-4 w-full rounded-2xl resize-none h-10"
           placeholder="Write a comment..."
-          @input="handleTextarea"
-          @click="peer"
+          @input="handleTextarea()"
+          @click="peer()"
+          @keydown.enter.exact.prevent="submit()"
         />
         <div
           class="relative overflow-hidden duration-200"
@@ -58,7 +63,7 @@ defineExpose({
         >
           <button
             class="absolute btn btn-circle btn-ghost disabled:bg-transparent text-primary disabled:cursor-not-allowed text-2xl right-0 top-0"
-            :disabled="isFetching || !form.content"
+            :disabled="isFetching || isEmpty"
           >
             <IconsSend />
           </button>

@@ -1,4 +1,4 @@
-import type { Links, Post, User, Comment } from '~/types'
+import type { Links, Post, User, Comment, Reply } from '~/types'
 
 export const useProfileStore = defineStore('profile', () => {
   const indexStore = useIndexStore()
@@ -66,6 +66,17 @@ export const useProfileStore = defineStore('profile', () => {
     profileData.value = data
   }
 
+
+  /**
+   *  * COMMENT
+   */
+
+  const getCommentIndexById = (commentId: string, postIndex: number) => {
+    return posts.value[postIndex].comments.findIndex(
+      (comment) => comment.id === commentId,
+    )
+  }
+
   const setComment = (comment: Comment, id: string) => {
     const index = getPostIndexById(id)
     if (index === -1) {
@@ -85,12 +96,6 @@ export const useProfileStore = defineStore('profile', () => {
     post.commentsCount++
   }
 
-  const getCommentIndexById = (commentId: string, postIndex: number) => {
-    return posts.value[postIndex].comments.findIndex(
-      (comment) => comment.id === commentId,
-    )
-  }
-
   const spliceComment = (comment: Comment) => {
     const postIndex = getPostIndexById(comment.postId)
     if (postIndex === -1) {
@@ -102,6 +107,64 @@ export const useProfileStore = defineStore('profile', () => {
     }
     posts.value[postIndex].comments.splice(commentIndex, 1)
     posts.value[postIndex].commentsCount--
+  }
+
+  /**
+   *  * REPLY
+   */
+
+  const getReplyIndexById = (
+    replyId: string,
+    postIndex: number,
+    commentIndex: number,
+  ) => {
+    return posts.value[postIndex].comments[commentIndex].replies.findIndex(
+      (reply) => reply.id === replyId,
+    )
+  }
+
+  const setReply = (reply: Reply, comment: Comment) => {
+    const postIndex = getPostIndexById(comment.postId)
+    if (postIndex === -1) {
+      return
+    }
+    const commentIndex = getCommentIndexById(comment.id, postIndex)
+    if (commentIndex === -1) {
+      return
+    }
+    const post = posts.value[postIndex]
+    post.comments[post.commentsCount - 1].replies[
+      getReplyIndexById(reply.id, postIndex, commentIndex)
+    ] = reply
+  }
+
+  const pushReply = (reply: Reply, comment: Comment) => {
+    const postIndex = getPostIndexById(comment.postId)
+    if (postIndex === -1) {
+      return
+    }
+    const commentIndex = getCommentIndexById(comment.id, postIndex)
+    if (commentIndex === -1) {
+      return
+    }
+    const post = posts.value[postIndex]
+    post.comments[commentIndex].replies.push(reply)
+    post.comments[commentIndex].repliesCount++
+  }
+
+  const spliceReply = (reply: Reply, comment: Comment) => {
+    const postIndex = getPostIndexById(comment.postId)
+    if (postIndex === -1) {
+      return
+    }
+    const commentIndex = getCommentIndexById(comment.id, postIndex)
+    if (commentIndex === -1) {
+      return
+    }
+    const replyIndex = getReplyIndexById(reply.id, postIndex, commentIndex)
+    const post = posts.value[postIndex]
+    post.comments[commentIndex].replies.splice(replyIndex, 1)
+    post.comments[commentIndex].repliesCount--
   }
 
   return {
@@ -118,11 +181,13 @@ export const useProfileStore = defineStore('profile', () => {
     setPost,
     splice,
     profileData,
+    defaultProfileData,
     setProfileData,
-    getPostIndexById,
     setComment,
     pushComment,
-    defaultProfileData,
     spliceComment,
+    setReply,
+    pushReply,
+    spliceReply,
   }
 })

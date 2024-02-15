@@ -62,4 +62,16 @@ export interface Comment {
   postId: string
   likes: number
   likedByUser: boolean
+  repliesCount: number
+  replies: Reply[]
+}
+
+export interface Reply {
+  content: string
+  id: string
+  user: User
+  createdAt: Date
+  commentId: string
+  likes: number
+  likedByUser: boolean
 }

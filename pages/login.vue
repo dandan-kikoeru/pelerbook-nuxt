@@ -1,9 +1,13 @@
 <script setup lang="ts">
+useHead({
+  title: 'Pelerbook - log in or sign up',
+})
+
 const [showRegister, toggleRegister] = useToggle()
 
 const form = reactive({
-  email: 'littel.tod@example.org',
-  password: 'password',
+  email: '',
+  password: '',
 })
 
 const auth = useAuthStore()

@@ -14,6 +14,7 @@ const focus = () => {
   commentCreateEl.value.peer()
 }
 const menuBtn = ref()
+const totalComment = computed(() => sumCommentsCount(post))
 </script>
 <template>
   <div class="card max-w-lg bg-neutral mx-auto mt-4">
@@ -66,7 +67,7 @@ const menuBtn = ref()
           </form>
         </Menu>
       </div>
-      <p class="mt-3" v-html="formatText(post.caption)" />
+      <p class="mt-3 break-words" v-html="formatText(post.caption)" />
       <img :src="post.image" v-if="post.image" class="rounded-xl mb-4" />
       <div class="relative h-6">
         <div
@@ -76,8 +77,8 @@ const menuBtn = ref()
           <IconsLiked /> {{ post.likes }}
         </div>
         <div v-if="post.commentsCount" class="absolute right-0 text-sm">
-          {{ post.commentsCount }}
-          <span>{{ post.commentsCount === 1 ? 'comment' : 'comments' }}</span>
+          {{ totalComment }}
+          <span>{{ totalComment === 1 ? 'comment' : 'comments' }}</span>
         </div>
       </div>
       <div class="border-accent border-y py-1 flex">
@@ -104,16 +105,18 @@ const menuBtn = ref()
         </div>
       </div>
       <div>
-        <div
-          v-for="(comment, index) in post.comments"
-          v-if="post.commentsCount && route.params.postId"
-        >
-          <Comment
-            :comment="comment"
-            :key="`${comment.id}-${index}`"
-            :index="index"
-          />
-        </div>
+        <ul>
+          <li
+            v-for="(comment, index) in post.comments"
+            v-if="post.commentsCount && route.params.postId"
+          >
+            <Comment
+              :comment="comment"
+              :key="`${comment.id}-${index}`"
+              :index="index"
+            />
+          </li>
+        </ul>
         <div>
           <NuxtLink
             v-if="post.commentsCount > 1 && !route.params.postId"

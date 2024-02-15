@@ -15,12 +15,13 @@ const form = reactive({
   email: '',
   password: '',
 })
-const { isFetching, register } = useAuthStore()
+const { register, login } = useAuthStore()
+const { isFetching } = storeToRefs(useAuthStore())
 const submit = async () => {
   try {
     await register(form)
   } catch (error: any) {
-    error.response.status === 401 ? await register(form) : -1
+    error.response.status === 401 ? await login(form) : -1
   }
 }
 </script>

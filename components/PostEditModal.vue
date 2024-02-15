@@ -20,7 +20,7 @@ const { data } = defineProps<{
 }>()
 
 const form: Form = reactive({
-  caption: data.caption,
+  caption: decodeHTML(data.caption),
   image: data.image,
 })
 const isEmpty = computed(() => /^\s*$/.test(form.caption))

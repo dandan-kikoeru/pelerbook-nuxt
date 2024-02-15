@@ -4,6 +4,7 @@ export default (input: string): string => {
     .replace(/\sminute(s)? ago/g, `m`)
     .replace(/\shour(s)? ago/g, `h`)
     .replace(/\sday(s)? ago/g, `d`)
+    .replace(/yesterday/g, `1d`)
     .replace(/\sweek(s)? ago/g, `w`)
     .replace(/\smonth(s)? ago/g, `mo`)
     .replace(/\syear(s)? ago/g, `y`)

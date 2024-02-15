@@ -1,34 +1,24 @@
 <script lang="ts" setup>
-import type { Comment } from '~/types'
-const { comment, index } = defineProps<{
-  comment: Comment
+import type { Reply, Comment } from '~/types'
+const { reply, index } = defineProps<{
+  reply: Reply
   index: number
+  comment: Comment
 }>()
-const commentEl = ref<HTMLElement | null>(null)
+const replyEl = ref<HTMLElement | null>(null)
 const { user } = useAuthStore()
 const scroll = () => {
-  window.scrollTo({ top: commentEl.value?.offsetTop, behavior: 'smooth' })
+  window.scrollTo({ top: replyEl.value?.offsetTop, behavior: 'smooth' })
 }
 const [isHover, toggleHover] = useToggle(false)
 const [showMenu, toggleMenu] = useToggle(false)
 const menuBtn = ref()
-const { isFetching, likeComment, deleteComment } = useComment()
+const { isFetching, likeReply, deleteReply } = useReply()
 const [isEditing, toggleEdit] = useToggle(false)
-const commentEditEl = ref()
+const replyEditEl = ref()
 const handleEditComment = async () => {
   await toggleEdit()
-  await commentEditEl.value.textarea.focus()
-}
-
-const replyCreateEl = ref()
-const isReplying = ref(false)
-const toggleReply = (val: boolean) => {
-  isReplying.value = val
-}
-const handleCreateReply = async () => {
-  await toggleReply(true)
-  replyCreateEl.value.textarea.focus()
-  replyCreateEl.value.peer()
+  await replyEditEl.value.textarea.focus()
 }
 </script>
 <template>
@@ -36,51 +26,54 @@ const handleCreateReply = async () => {
     <div
       @mouseenter="toggleHover()"
       @mouseleave="toggleHover()"
-      ref="commentEl"
-      class="mt-2"
+      ref="replyElEl"
       v-if="!isEditing"
+      class="mt-2"
     >
       <div class="flex gap-1">
         <NuxtLink
-          :to="`/${comment.user.id}`"
+          :to="`/${reply.user.id}`"
           class="btn btn-ghost btn-circle avatar"
         >
           <div class="w-10 rounded-full">
-            <img :src="comment.user.avatar" />
+            <img :src="reply.user.avatar" />
           </div>
         </NuxtLink>
-        <div class="flex items-center">
+        <div class="flex w-full items-center">
           <div class="items-center">
-            <div class="bg-[#3a3b3c] py-2 px-4 rounded-3xl relative max-w-96">
+            <div
+              class="bg-[#3a3b3c] py-2 px-4 rounded-3xl w-fit relative max-w-80"
+            >
               <p class="font-semibold">
-                <NuxtLink :to="`/${comment.user.id}`" class="hover:underline">
-                  {{ comment.user.firstname }}
-                  {{ comment.user.surname }}
+                <NuxtLink :to="`/${reply.user.id}`" class="hover:underline">
+                  {{ reply.user.firstname }}
+                  {{ reply.user.surname }}
                 </NuxtLink>
               </p>
-              <p class="break-words" v-html="formatText(comment.content)" />
+              <p class="break-words" v-html="formatText(reply.content)" />
               <div
                 class="absolute bottom-0 rounded-full bg-accent flex gap-1 items-center border-2 border-accent"
-                :class="comment.likes > 1 ? 'pr-1 -right-8' : '-right-4'"
-                v-if="comment.likes"
+                :class="reply.likes > 1 ? 'pr-1 -right-8' : '-right-4'"
+                v-if="reply.likes"
               >
                 <span class="bg-primary rounded-full p-1 text-xs">
                   <IconsLiked />
                 </span>
-                <span v-if="comment.likes > 1" class="text-sm">
-                  {{ comment.likes }}
+                <span v-if="reply.likes > 1" class="text-sm">
+                  {{ reply.likes }}
                 </span>
               </div>
             </div>
           </div>
+
           <div class="relative">
             <div
-              v-if="comment.user.id === user?.id"
+              v-if="reply.user.id === user?.id"
               ref="menuBtn"
               class="btn btn-circle btn-sm text-xl btn-ghost opacity-0"
               :class="[
                 isHover ? 'opacity-100' : '',
-                comment.likes ? 'ml-4' : 'ml-2',
+                reply.likes ? 'ml-4' : 'ml-2',
               ]"
               @click="toggleMenu()"
             >
@@ -98,7 +91,7 @@ const handleCreateReply = async () => {
               <li>
                 <button
                   class="py-2"
-                  @click="deleteComment(comment), (isHover = false)"
+                  @click="deleteReply(reply, comment), (isHover = false)"
                   :disabled="isFetching"
                 >
                   Delete
@@ -113,47 +106,28 @@ const handleCreateReply = async () => {
           class="text-sm hover:underline cursor-pointer w-fit"
           @click="scroll"
         >
-          {{ formatDate(useTimeAgo(comment.createdAt).value) }}
+          {{ formatDate(useTimeAgo(reply.createdAt).value) }}
         </span>
         <span
           class="text-sm ml-4 hover:underline cursor-pointer font-semibold"
-          :class="comment.likedByUser ? 'text-primary' : ''"
-          @click="likeComment(comment.id, comment.postId, index)"
+          :class="reply.likedByUser ? 'text-primary' : ''"
+          @click="likeReply(reply.id, comment)"
         >
-          <template v-if="comment.likedByUser"> Liked </template>
+          <template v-if="reply.likedByUser"> Liked </template>
           <template v-else> Like </template>
         </span>
-        <span
-          class="text-sm ml-4 hover:underline cursor-pointer font-semibold"
-          @click="handleCreateReply()"
+        <span class="text-sm ml-4 hover:underline cursor-pointer font-semibold" @click="$emit('reply')"
           >Reply</span
         >
       </div>
     </div>
-    <CommentEdit
+    <ReplyEdit
       :comment="comment"
+      :reply="reply"
       v-if="isEditing"
-      ref="commentEditEl"
+      ref="replyEditEl"
       :index="index"
       @close="toggleEdit(), toggleMenu(), (isHover = false)"
     />
-    <ul>
-      <li v-for="(reply, index) in comment.replies">
-        <Reply
-          class="ml-16"
-          :reply="reply"
-          :comment="comment"
-          :key="`${reply.id}-${index}`"
-          :index="index"
-          @reply="handleCreateReply()"
-        />
-      </li>
-      <ReplyCreate
-        :comment="comment"
-        class="ml-16"
-        ref="replyCreateEl"
-        v-if="isReplying"
-      />
-    </ul>
   </div>
 </template>

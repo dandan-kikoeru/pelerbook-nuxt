@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { Comment } from '~/types'
-const { comment, index } = defineProps<{ comment: Comment; index: number }>()
+import type { Comment, Reply } from '~/types'
+const { reply, comment } = defineProps<{ reply: Reply; comment: Comment }>()
 const emit = defineEmits()
 const textarea = ref<HTMLElement | null>(null)
 const form = reactive({
@@ -16,10 +16,10 @@ const handleTextarea = () => {
 
 const isEmpty = computed(() => /^\s*$/.test(form.content))
 
-const { isFetching, editComment } = useComment()
+const { isFetching, editReply } = useReply()
 const submit = async () => {
   try {
-    await editComment(form, comment, index)
+    await editReply(form, reply, comment)
     emit('close')
   } catch (error: any) {
     console.error(error.response.data.message)

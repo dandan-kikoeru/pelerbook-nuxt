@@ -25,7 +25,6 @@ export const useComment = () => {
     }
   }
 
-  //prettier-ignore
   const editComment = async (form: Object, comment: Comment, commentIndex: number) => {
     try {
       isFetching.value = true
@@ -54,7 +53,6 @@ export const useComment = () => {
     }
   }
 
-  //prettier-ignore
   const likeComment = async (id: string, postId: string, commentIndex: number) => {
     try {
       isFetching.value = true

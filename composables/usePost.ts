@@ -4,8 +4,8 @@ export const usePost = () => {
   const indexStore = useIndexStore()
   const profileStore = useProfileStore()
   const captionStore = useCaptionStore()
+  const singleStore = useSingleStore()
   const isFetching = ref(false)
-  const { fetchPost } = useFetchPost()
   const { $axios } = useNuxtApp()
 
   const deletePost = async (id: string) => {
@@ -50,10 +50,10 @@ export const usePost = () => {
           'Content-Type': 'multipart/form-data',
         },
       })
-      indexStore.setPost(response.data, id)
-      profileStore.setPost(response.data, id)
+      indexStore.setCaption(response.data.caption, response.data.image, id)
+      profileStore.setCaption(response.data.caption, response.data.image, id)
       if (route.params.postId) {
-        await fetchPost()
+        singleStore.setCaption(response.data.caption, response.data.image)
       }
     } finally {
       isFetching.value = false
@@ -64,10 +64,10 @@ export const usePost = () => {
     try {
       isFetching.value = true
       const response: any = await $axios.post(`/api/post/like/${id}`)
-      indexStore.setPost(response.data, id)
-      profileStore.setPost(response.data, id)
+      indexStore.setLikes(response.data.likes, response.data.likedByUser, id)
+      profileStore.setLikes(response.data.likes, response.data.likedByUser, id)
       if (route.params.postId) {
-        await fetchPost()
+        singleStore.setLikes(response.data.likes, response.data.likedByUser)
       }
     } finally {
       isFetching.value = false

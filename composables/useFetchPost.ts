@@ -44,7 +44,9 @@ export const useFetchPost = () => {
   const fetchPost = async () => {
     try {
       isFetching.value = true
-      const response: any = await $axios.get(`/api/post/${route.params.postId}`)
+      const response: any = await $axios.get(
+        `/api/post/${route.params.postId}?withoutComments=true`,
+      )
       singleStore.setPost(response.data.data)
     } catch (error: any) {
       navigateTo('/', { replace: true })

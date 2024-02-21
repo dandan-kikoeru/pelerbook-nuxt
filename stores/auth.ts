@@ -4,7 +4,6 @@ export const useAuthStore = defineStore('auth', () => {
   const { $axios } = useNuxtApp()
   const user = ref<User | null>(null)
   const isFetching = ref(false)
-
   const initCSRF = async () => {
     await $axios.get('/sanctum/csrf-cookie')
   }

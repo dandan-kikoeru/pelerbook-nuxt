@@ -43,12 +43,30 @@ export const useProfileStore = defineStore('profile', () => {
     profileId.value = data
   }
 
-  const setPost = (data: Post, id: string) => {
-    posts.value[getPostIndexById(id)] = data
+  const setCaption = (caption: string, image: string, id: string) => {
+    const index = getPostIndexById(id)
+    if (index === -1) {
+      return
+    }
+    posts.value[index].caption = caption
+    posts.value[index].image = image
+  }
+
+  const setLikes = (likes: number, likedByUser: boolean, id: string) => {
+    const index = getPostIndexById(id)
+    if (index === -1) {
+      return
+    }
+    posts.value[index].likes = likes
+    posts.value[index].likedByUser = likedByUser
   }
 
   const splice = (id: string) => {
-    posts.value.splice(getPostIndexById(id), 1)
+    const index = getPostIndexById(id)
+    if (index === -1) {
+      return
+    }
+    posts.value.splice(index, 1)
   }
 
   const defaultProfileData: User = reactive({
@@ -66,7 +84,6 @@ export const useProfileStore = defineStore('profile', () => {
     profileData.value = data
   }
 
-
   /**
    *  * COMMENT
    */
@@ -77,26 +94,36 @@ export const useProfileStore = defineStore('profile', () => {
     )
   }
 
-  const setComment = (comment: Comment, id: string) => {
+  const setCommentContent = (content: string, id: string) => {
     const index = getPostIndexById(id)
     if (index === -1) {
       return
     }
     const post = posts.value[index]
-    post.comments[post.commentsCount - 1] = comment
+    post.comments[post.comments.length - 1].content = content
   }
 
-  const pushComment = (comment: Comment, id: string) => {
+  const setCommentLikes = (likes: number, likedByUser: boolean, id: string) => {
+    const index = getPostIndexById(id)
+    if (index === -1) {
+      return
+    }
+    const post = posts.value[index]
+    post.comments[post.comments.length - 1].likes = likes
+    post.comments[post.comments.length - 1].likedByUser = likedByUser
+  }
+
+  const pushComment = (comment: Comment, id: string, commentsCount: number) => {
     const index = getPostIndexById(id)
     if (index === -1) {
       return
     }
     const post = posts.value[index]
     post.comments.push(comment)
-    post.commentsCount++
+    post.commentsCount = commentsCount
   }
 
-  const spliceComment = (comment: Comment) => {
+  const spliceComment = (comment: Comment, commentsCount: number) => {
     const postIndex = getPostIndexById(comment.postId)
     if (postIndex === -1) {
       return
@@ -106,7 +133,7 @@ export const useProfileStore = defineStore('profile', () => {
       return
     }
     posts.value[postIndex].comments.splice(commentIndex, 1)
-    posts.value[postIndex].commentsCount--
+    posts.value[postIndex].commentsCount = commentsCount
   }
 
   /**
@@ -133,12 +160,12 @@ export const useProfileStore = defineStore('profile', () => {
       return
     }
     const post = posts.value[postIndex]
-    post.comments[post.commentsCount - 1].replies[
+    post.comments[post.comments.length - 1].replies[
       getReplyIndexById(reply.id, postIndex, commentIndex)
     ] = reply
   }
 
-  const pushReply = (reply: Reply, comment: Comment) => {
+  const pushReply = (reply: Reply, comment: Comment, commentsCount: number) => {
     const postIndex = getPostIndexById(comment.postId)
     if (postIndex === -1) {
       return
@@ -149,10 +176,14 @@ export const useProfileStore = defineStore('profile', () => {
     }
     const post = posts.value[postIndex]
     post.comments[commentIndex].replies.push(reply)
-    post.comments[commentIndex].repliesCount++
+    post.commentsCount = commentsCount
   }
 
-  const spliceReply = (reply: Reply, comment: Comment) => {
+  const spliceReply = (
+    reply: Reply,
+    comment: Comment,
+    commentsCount: number,
+  ) => {
     const postIndex = getPostIndexById(comment.postId)
     if (postIndex === -1) {
       return
@@ -164,7 +195,7 @@ export const useProfileStore = defineStore('profile', () => {
     const replyIndex = getReplyIndexById(reply.id, postIndex, commentIndex)
     const post = posts.value[postIndex]
     post.comments[commentIndex].replies.splice(replyIndex, 1)
-    post.comments[commentIndex].repliesCount--
+    post.commentsCount = commentsCount
   }
 
   return {
@@ -178,12 +209,14 @@ export const useProfileStore = defineStore('profile', () => {
     unshift,
     profileId,
     setProfileId,
-    setPost,
+    setCaption,
+    setLikes,
     splice,
     profileData,
     defaultProfileData,
     setProfileData,
-    setComment,
+    setCommentContent,
+    setCommentLikes,
     pushComment,
     spliceComment,
     setReply,

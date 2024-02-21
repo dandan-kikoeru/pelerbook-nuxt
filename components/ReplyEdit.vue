@@ -4,7 +4,7 @@ const { reply, comment } = defineProps<{ reply: Reply; comment: Comment }>()
 const emit = defineEmits()
 const textarea = ref<HTMLElement | null>(null)
 const form = reactive({
-  content: decodeHTML(comment.content),
+  content: decodeHTML(reply.content),
 })
 
 const handleTextarea = () => {
@@ -43,11 +43,11 @@ onMounted(() => {
   <div>
     <div class="flex gap-1 mt-2 w-full">
       <NuxtLink
-        :to="`/${comment.user.id}`"
+        :to="`/${reply.user.id}`"
         class="btn btn-ghost btn-circle avatar"
       >
         <div class="w-10 rounded-full">
-          <img :src="comment.user.avatar" />
+          <img :src="reply.user.avatar" />
         </div>
       </NuxtLink>
       <div class="flex w-full items-center">
@@ -57,7 +57,7 @@ onMounted(() => {
               ref="textarea"
               v-model="form.content"
               class="bg-transparent outline-none py-2 px-4 w-full rounded-2xl resize-none h-10"
-              placeholder="Write a comment..."
+              placeholder="Write a reply..."
               @input="handleTextarea"
               @keydown.enter.exact.prevent="submit"
             />

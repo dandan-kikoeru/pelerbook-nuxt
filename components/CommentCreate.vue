@@ -56,6 +56,7 @@ defineExpose({
           @input="handleTextarea()"
           @click="peer()"
           @keydown.enter.exact.prevent="submit()"
+          :disabled="isFetching"
         />
         <div
           class="relative overflow-hidden duration-200"

@@ -4,7 +4,7 @@ const { comment, index } = defineProps<{
   comment: Comment
   index: number
 }>()
-const commentEl = ref<HTMLElement | null>(null)
+const commentEl = ref()
 const { user } = useAuthStore()
 const scroll = () => {
   window.scrollTo({ top: commentEl.value?.offsetTop, behavior: 'smooth' })
@@ -111,7 +111,7 @@ const handleCreateReply = async () => {
       <div class="flex ml-16">
         <span
           class="text-sm hover:underline cursor-pointer w-fit"
-          @click="scroll"
+          @click="scroll()"
         >
           {{ formatDate(useTimeAgo(comment.createdAt).value) }}
         </span>

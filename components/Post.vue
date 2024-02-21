@@ -3,18 +3,33 @@ import type { Post } from '~/types'
 
 const { post } = defineProps<{ post: Post }>()
 const auth = useAuthStore()
+const single = useSingleStore()
+const { isFetching: isCommentFetching } = storeToRefs(single)
 const route: any = useRoute()
 
 const [showMenu, toggleMenu] = useToggle(false)
 const [showEditPost, toggleEditPost] = useToggle(false)
-const { deletePost, likePost, isFetching } = usePost()
+const { deletePost, likePost, isFetching: isPostFetching } = usePost()
+const isFetching = computed(
+  () => isCommentFetching.value || isPostFetching.value,
+)
 const commentCreateEl = ref()
 const focus = () => {
   commentCreateEl.value.textarea.focus()
   commentCreateEl.value.peer()
 }
+
 const menuBtn = ref()
-const totalComment = computed(() => sumCommentsCount(post))
+
+const commentsListEl = ref()
+const { y } = useWindowScroll()
+const handleFetchComments = async () => {
+  const before = commentsListEl.value.clientHeight
+  await single.fetchComments()
+  single.incrementPage()
+  const after = commentsListEl.value.clientHeight
+  y.value += after - before
+}
 </script>
 <template>
   <div class="card max-w-lg bg-neutral mx-auto mt-4">
@@ -68,7 +83,9 @@ const totalComment = computed(() => sumCommentsCount(post))
         </Menu>
       </div>
       <p class="mt-3 break-words" v-html="formatText(post.caption)" />
-      <img :src="post.image" v-if="post.image" class="rounded-xl mb-4" />
+      <NuxtLink :to="`/posts/${post.id}`">
+        <img :src="post.image" v-if="post.image" class="rounded-xl mb-4" />
+      </NuxtLink>
       <div class="relative h-6">
         <div
           v-if="post.likes"
@@ -77,8 +94,8 @@ const totalComment = computed(() => sumCommentsCount(post))
           <IconsLiked /> {{ post.likes }}
         </div>
         <div v-if="post.commentsCount" class="absolute right-0 text-sm">
-          {{ totalComment }}
-          <span>{{ totalComment === 1 ? 'comment' : 'comments' }}</span>
+          {{ post.commentsCount }}
+          <span>{{ post.commentsCount === 1 ? 'comment' : 'comments' }}</span>
         </div>
       </div>
       <div class="border-accent border-y py-1 flex">
@@ -104,28 +121,39 @@ const totalComment = computed(() => sumCommentsCount(post))
           </div>
         </div>
       </div>
-      <div>
-        <ul>
-          <li
-            v-for="(comment, index) in post.comments"
-            v-if="post.commentsCount && route.params.postId"
-          >
-            <Comment
-              :comment="comment"
-              :key="`${comment.id}-${index}`"
-              :index="index"
-            />
-          </li>
-        </ul>
+      <div ref="commentsListEl">
+        <button
+          v-if="single.links?.next"
+          class="text-sm hover:underline"
+          @click="handleFetchComments()"
+          :disabled="isFetching"
+        >
+          View more comments
+        </button>
+        <div>
+          <ul>
+            <li
+              v-for="(comment, index) in post.comments"
+              v-if="post.commentsCount && route.params.postId"
+            >
+              <Comment
+                :comment="comment"
+                :key="`${comment.id}-${index}`"
+                :index="index"
+              />
+            </li>
+          </ul>
+        </div>
         <div>
           <NuxtLink
-            v-if="post.commentsCount > 1 && !route.params.postId"
+            v-if="post.comments.length > 1 && !route.params.postId"
             :to="`/posts/${post.id}`"
             class="text-sm hover:underline"
             >View more comments</NuxtLink
           >
           <Comment
-            :comment="post.comments[post.commentsCount - 1]"
+            :comment="post.comments[post.comments.length - 1]"
+            :key="post.comments[post.comments.length - 1].id"
             v-if="post.commentsCount && !route.params.postId"
             :index="-1"
           />

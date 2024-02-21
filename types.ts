@@ -1,4 +1,6 @@
 export interface User {
+  value: User
+  data: User
   avatar: string
   firstname: string
   id: number
@@ -14,6 +16,8 @@ export interface Posts {
 }
 
 export interface Post {
+  value: Post
+  data: Post
   caption: string
   createdAt: Date
   id: string
@@ -55,6 +59,8 @@ export interface Form {
 }
 
 export interface Comment {
+  value: Comment
+  data: Comment
   content: string
   id: string
   user: User
@@ -67,6 +73,8 @@ export interface Comment {
 }
 
 export interface Reply {
+  value: Reply
+  data: Reply
   content: string
   id: string
   user: User

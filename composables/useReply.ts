@@ -15,10 +15,22 @@ export const useReply = () => {
         `/api/reply/store/${comment.id}`,
         form,
       )
-      indexStore.pushReply(response.data, comment)
-      profileStore.pushReply(response.data, comment)
+      indexStore.pushReply(
+        response.data.data,
+        comment,
+        response.data.commentsCount,
+      )
+      profileStore.pushReply(
+        response.data.data,
+        comment,
+        response.data.commentsCount,
+      )
       if (route.params.postId) {
-        singleStore.pushReply(response.data, comment)
+        singleStore.pushReply(
+          response.data.data,
+          comment,
+          response.data.commentsCount,
+        )
       }
     } finally {
       isFetching.value = false
@@ -42,11 +54,11 @@ export const useReply = () => {
   const deleteReply = async (reply: Reply, comment: Comment) => {
     try {
       isFetching.value = true
-      await $axios.post(`/api/reply/destroy/${reply.id}`)
-      indexStore.spliceReply(reply, comment)
-      profileStore.spliceReply(reply, comment)
+      const response: any = await $axios.post(`/api/reply/destroy/${reply.id}`)
+      indexStore.spliceReply(reply, comment, response.data.commentsCount)
+      profileStore.spliceReply(reply, comment, response.data.commentsCount)
       if (route.params.postId) {
-        singleStore.spliceReply(reply, comment)
+        singleStore.spliceReply(reply, comment, response.data.commentsCount)
       }
     } finally {
       isFetching.value = false

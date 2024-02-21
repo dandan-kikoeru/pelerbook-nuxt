@@ -6,6 +6,8 @@ await fetchPost()
 useHead({
   title: `${single.post?.user.firstname} ${single.post?.user.surname} - ${truncate(single.post?.caption)} | Pelerbook`,
 })
+useSingleStore().fetchComments()
+useSingleStore().incrementPage()
 </script>
 <template>
   <Post :post="single.post" v-if="single.post" />

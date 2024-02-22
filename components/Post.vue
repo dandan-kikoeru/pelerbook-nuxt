@@ -123,7 +123,7 @@ const handleFetchComments = async () => {
       </div>
       <div ref="commentsListEl">
         <button
-          v-if="single.links?.next"
+          v-if="single.links?.next && route.params.postId"
           class="text-sm hover:underline"
           @click="handleFetchComments()"
           :disabled="isFetching"
@@ -145,11 +145,15 @@ const handleFetchComments = async () => {
           </ul>
         </div>
         <div>
-          <NuxtLink
+          <span
             v-if="post.comments.length > 1 && !route.params.postId"
-            :to="`/posts/${post.id}`"
-            class="text-sm hover:underline"
-            >View more comments</NuxtLink
+            @click="
+              navigateTo(
+                `/posts/${post.id}?commentId=${post.comments[post.comments.length - 2].id}`,
+              )
+            "
+            class="text-sm link-hover cursor-pointer"
+            >View more comments</span
           >
           <Comment
             :comment="post.comments[post.comments.length - 1]"

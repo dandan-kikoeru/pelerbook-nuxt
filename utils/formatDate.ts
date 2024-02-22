@@ -8,5 +8,7 @@ export default (input: string): string => {
     .replace(/\sweek(s)? ago/g, `w`)
     .replace(/last week/g, `1w`)
     .replace(/\smonth(s)? ago/g, `mo`)
+    .replace(/last month/g, `1mo`)
     .replace(/\syear(s)? ago/g, `y`)
+    .replace(/last year/g, `1y`)
 }

@@ -7,8 +7,10 @@ const { comment, index } = defineProps<{
 const commentEl = ref()
 const { user } = useAuthStore()
 const scroll = () => {
-  window.scrollTo({ top: commentEl.value?.offsetTop, behavior: 'smooth' })
+  window.scrollTo({ top: commentEl.value.offsetTop, behavior: 'smooth' })
+  useRoute().params.postId ? navigateTo(`/posts/${comment.postId}`) : -1
 }
+
 const [isHover, toggleHover] = useToggle(false)
 const [showMenu, toggleMenu] = useToggle(false)
 const menuBtn = ref()
@@ -30,6 +32,11 @@ const handleCreateReply = async () => {
   replyCreateEl.value.textarea.focus()
   replyCreateEl.value.peer()
 }
+setTimeout(() => {
+  useRoute().query.commentId === comment.id
+    ? (scroll(), navigateTo(`/posts/${comment.postId}`))
+    : -1
+}, 100)
 </script>
 <template>
   <div>
@@ -109,12 +116,13 @@ const handleCreateReply = async () => {
         </div>
       </div>
       <div class="flex ml-16">
-        <span
+        <NuxtLink
+          :to="`/posts/${comment.postId}?commentId=${comment.id}`"
           class="text-sm hover:underline cursor-pointer w-fit"
           @click="scroll()"
         >
           {{ formatDate(useTimeAgo(comment.createdAt).value) }}
-        </span>
+        </NuxtLink>
         <span
           class="text-sm ml-4 hover:underline cursor-pointer font-semibold"
           :class="comment.likedByUser ? 'text-primary' : ''"

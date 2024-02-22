@@ -1,14 +1,15 @@
 <script lang="ts" setup>
 import type { Reply, Comment } from '~/types'
-const { reply, index } = defineProps<{
+const { reply, index, comment } = defineProps<{
   reply: Reply
   index: number
   comment: Comment
 }>()
-const replyEl = ref<HTMLElement | null>(null)
+const replyEl = ref()
 const { user } = useAuthStore()
 const scroll = () => {
-  window.scrollTo({ top: replyEl.value?.offsetTop, behavior: 'smooth' })
+  window.scrollTo({ top: replyEl.value.offsetTop, behavior: 'smooth' })
+  useRoute().params.postId ? navigateTo(`/posts/${comment.postId}`) : -1
 }
 const [isHover, toggleHover] = useToggle(false)
 const [showMenu, toggleMenu] = useToggle(false)
@@ -20,13 +21,18 @@ const handleEditComment = async () => {
   await toggleEdit()
   await replyEditEl.value.textarea.focus()
 }
+setTimeout(() => {
+  useRoute().query.replyId === reply.id
+    ? (scroll(), navigateTo(`/posts/${comment.postId}`))
+    : -1
+}, 100)
 </script>
 <template>
   <div>
     <div
       @mouseenter="toggleHover()"
       @mouseleave="toggleHover()"
-      ref="replyElEl"
+      ref="replyEl"
       v-if="!isEditing"
       class="mt-2"
     >
@@ -102,12 +108,13 @@ const handleEditComment = async () => {
         </div>
       </div>
       <div class="flex ml-16">
-        <span
+        <NuxtLink
+          :to="`/posts/${comment.postId}?replyId=${reply.id}`"
           class="text-sm hover:underline cursor-pointer w-fit"
-          @click="scroll"
+          @click="scroll()"
         >
           {{ formatDate(useTimeAgo(reply.createdAt).value) }}
-        </span>
+        </NuxtLink>
         <span
           class="text-sm ml-4 hover:underline cursor-pointer font-semibold"
           :class="reply.likedByUser ? 'text-primary' : ''"
@@ -116,7 +123,9 @@ const handleEditComment = async () => {
           <template v-if="reply.likedByUser"> Liked </template>
           <template v-else> Like </template>
         </span>
-        <span class="text-sm ml-4 hover:underline cursor-pointer font-semibold" @click="$emit('reply')"
+        <span
+          class="text-sm ml-4 hover:underline cursor-pointer font-semibold"
+          @click="$emit('reply')"
           >Reply</span
         >
       </div>

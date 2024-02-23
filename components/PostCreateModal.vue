@@ -88,8 +88,8 @@ onUnmounted(() => {
     </div>
     <div class="card-body gap-4 py-4">
       <form @submit.prevent="submit">
-        <div class="flex gap-4 flex-col">
-          <div class="overflow-y-auto max-h-96">
+        <NuxtScrollbar class="flex gap-4 flex-col">
+          <div class="max-h-96">
             <textarea
               ref="textareaEl"
               v-model="form.caption"
@@ -122,7 +122,7 @@ onUnmounted(() => {
             accept=".jpg, .jpeg, .png, .webp"
             class="hidden"
           />
-        </div>
+        </NuxtScrollbar>
         <button
           class="btn btn-secondary normal-case btn-block mx-auto mt-2"
           :disabled="isFetching || isEmpty"

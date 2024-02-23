@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ps__rail-y {
+  width: 0 !important;
+}

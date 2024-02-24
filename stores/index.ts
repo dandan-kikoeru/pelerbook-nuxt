@@ -48,6 +48,14 @@ export const useIndexStore = defineStore('index', () => {
     posts.value[index].likedByUser = likedByUser
   }
 
+  const setShares = (sharesCount: number, id: string) => {
+    const index = getPostIndexById(id)
+    if (index === -1) {
+      return
+    }
+    posts.value[index].sharesCount = sharesCount
+  }
+
   const splice = (id: string) => {
     const index = getPostIndexById(id)
     if (index === -1) {
@@ -188,5 +196,6 @@ export const useIndexStore = defineStore('index', () => {
     setReply,
     pushReply,
     spliceReply,
+    setShares,
   }
 })

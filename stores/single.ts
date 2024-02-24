@@ -13,6 +13,8 @@ export const useSingleStore = defineStore('single', () => {
     image: '',
     commentsCount: 0,
     comments: [],
+    shared: null,
+    sharesCount: 0,
   })
 
   const post = ref<Post>(defaultPostData)
@@ -29,6 +31,10 @@ export const useSingleStore = defineStore('single', () => {
   const setLikes = (likes: number, likedByUser: boolean) => {
     post.value.likes = likes
     post.value.likedByUser = likedByUser
+  }
+
+  const setShares = (sharesCount: number) => {
+    post.value.sharesCount = sharesCount
   }
 
   const page = ref<number>(1)
@@ -143,5 +149,6 @@ export const useSingleStore = defineStore('single', () => {
     links,
     incrementPage,
     isFetching,
+    setShares,
   }
 })

@@ -74,5 +74,19 @@ export const usePost = () => {
     }
   }
 
-  return { isFetching, deletePost, createPost, editPost, likePost }
+  const sharePost = async (form: Object, id: string) => {
+    try {
+      isFetching.value = true
+      const response: any = await $axios.post(`/api/post/share/${id}`, form)
+      indexStore.unshift(response.data.data)
+      profileStore.unshift(response.data.data)
+      indexStore.setShares(response.data.sharesCount, id)
+      profileStore.setShares(response.data.sharesCount, id)
+      singleStore.setShares(response.data.sharesCount)
+    } finally {
+      isFetching.value = false
+    }
+  }
+
+  return { isFetching, deletePost, createPost, editPost, likePost, sharePost }
 }

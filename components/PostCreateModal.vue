@@ -20,7 +20,7 @@ const form: Form = reactive({
   caption: captionStore.caption,
   image: '',
 })
-const isEmpty = computed(() => /^\s*$/.test(form.caption))
+const isEmpty = computed(() => /^\s*$/.test(form.caption) && !form.image)
 
 const submit = async () => {
   if (!isEmpty.value) {
@@ -86,15 +86,15 @@ onUnmounted(() => {
         <IconsClose />
       </div>
     </div>
-    <div class="card-body gap-4 py-4">
+    <div class="card-body -m-4">
       <form @submit.prevent="submit">
-        <NuxtScrollbar class="flex gap-4 flex-col">
+        <NuxtScrollbar>
           <div class="max-h-96">
             <textarea
               ref="textareaEl"
               v-model="form.caption"
               :placeholder="`What's on your mind, ${user?.firstname}`"
-              class="w-full bg-transparent outline-none resize-none"
+              class="w-full bg-transparent outline-none resize-none pl-4"
               @input="handleTextarea()"
               @keydown.enter.exact.prevent="submit()"
             />
@@ -107,24 +107,24 @@ onUnmounted(() => {
               </div>
               <img :src="imagePreviewUrl" class="rounded-xl w-full" />
             </div>
+            <div
+              class="btn btn-ghost btn-circle text-2xl"
+              @click="openfileInputEl()"
+              v-if="!imagePreviewUrl"
+            >
+              <IconsPhoto />
+            </div>
+            <input
+              type="file"
+              ref="fileInputEl"
+              @change="handleFileInput()"
+              accept=".jpg, .jpeg, .png, .webp"
+              class="hidden"
+            />
           </div>
-          <div
-            class="btn btn-ghost btn-circle text-2xl"
-            @click="openfileInputEl()"
-            v-if="!imagePreviewUrl"
-          >
-            <IconsPhoto />
-          </div>
-          <input
-            type="file"
-            ref="fileInputEl"
-            @change="handleFileInput()"
-            accept=".jpg, .jpeg, .png, .webp"
-            class="hidden"
-          />
         </NuxtScrollbar>
         <button
-          class="btn btn-secondary normal-case btn-block mx-auto mt-2"
+          class="btn btn-primary normal-case btn-block mx-auto mt-4"
           :disabled="isFetching || isEmpty"
         >
           Post

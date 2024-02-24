@@ -9,6 +9,7 @@ const route: any = useRoute()
 
 const [showMenu, toggleMenu] = useToggle(false)
 const [showEditPost, toggleEditPost] = useToggle(false)
+const [showSharePost, toggleSharePost] = useToggle(false)
 const { deletePost, likePost, isFetching: isPostFetching } = usePost()
 const isFetching = computed(
   () => isCommentFetching.value || isPostFetching.value,
@@ -82,23 +83,43 @@ const handleFetchComments = async () => {
           </form>
         </Menu>
       </div>
-      <p class="mt-3 break-words" v-html="formatText(post.caption)" />
-      <NuxtLink :to="`/posts/${post.id}`">
-        <img :src="post.image" v-if="post.image" class="rounded-xl mb-4" />
-      </NuxtLink>
-      <div class="relative h-6">
+      <template v-if="!post.shared">
+        <p class="mt-3 break-words" v-html="formatText(post.caption)" />
+        <NuxtLink :to="`/posts/${post.id}`">
+          <img :src="post.image" v-if="post.image" class="rounded-xl mb-2" />
+        </NuxtLink>
+      </template>
+      <template v-else-if="post.shared">
+        <p class="mt-3 break-words" v-html="formatText(post.caption)" />
+        <div class="border border-accent rounded-xl">
+          <PostShare :post="post.shared" />
+        </div>
+      </template>
+      <div
+        class="relative h-6"
+        v-if="post.likes || post.commentsCount || post.sharesCount"
+      >
         <div
           v-if="post.likes"
           class="text-primary flex items-center gap-1 absolute"
         >
           <IconsLiked /> {{ post.likes }}
         </div>
-        <div v-if="post.commentsCount" class="absolute right-0 text-sm">
-          {{ post.commentsCount }}
-          <span>{{ post.commentsCount === 1 ? 'comment' : 'comments' }}</span>
+        <div class="flex justify-end gap-2">
+          <div v-if="post.commentsCount" class="text-sm">
+            {{ post.commentsCount }}
+            <span>{{ post.commentsCount === 1 ? 'comment' : 'comments' }}</span>
+          </div>
+          <div v-if="post.sharesCount" class="text-sm">
+            {{ post.sharesCount }}
+            <span>{{ post.sharesCount === 1 ? 'share' : 'shares' }}</span>
+          </div>
         </div>
       </div>
-      <div class="border-accent border-y py-1 flex">
+      <div
+        class="border-accent py-1 flex"
+        :class="post.shared ? 'border-b -mt-2' : 'border-y'"
+      >
         <form @submit.prevent="likePost(post.id)" class="w-full">
           <button
             class="btn btn-ghost btn-block text-base"
@@ -118,6 +139,14 @@ const handleFetchComments = async () => {
         <div class="w-full">
           <div class="btn btn-ghost btn-block text-base" @click="focus()">
             <IconsComment /> Comment
+          </div>
+        </div>
+        <div class="w-full">
+          <div
+            class="btn btn-ghost btn-block text-base"
+            @click="toggleSharePost()"
+          >
+            <IconsShare /> Share
           </div>
         </div>
       </div>
@@ -168,10 +197,18 @@ const handleFetchComments = async () => {
   </div>
   <div v-if="showEditPost" class="bg-black/50 fixed top-0 w-full h-full z-30">
     <PostEditModal
-      @close="toggleEditPost"
+      @close="toggleEditPost()"
       class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
       :firstName="auth.user?.firstname"
-      :data="post"
+      :post="post"
+    />
+  </div>
+  <div v-if="showSharePost" class="bg-black/50 fixed top-0 w-full h-full z-30">
+    <PostShareModal
+      @close="toggleSharePost()"
+      class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+      :firstName="auth.user?.firstname"
+      :post="post.shared ? post.shared : post"
     />
   </div>
 </template>

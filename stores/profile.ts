@@ -61,6 +61,14 @@ export const useProfileStore = defineStore('profile', () => {
     posts.value[index].likedByUser = likedByUser
   }
 
+  const setShares = (sharesCount: number, id: string) => {
+    const index = getPostIndexById(id)
+    if (index === -1) {
+      return
+    }
+    posts.value[index].sharesCount = sharesCount
+  }
+
   const splice = (id: string) => {
     const index = getPostIndexById(id)
     if (index === -1) {
@@ -222,5 +230,6 @@ export const useProfileStore = defineStore('profile', () => {
     setReply,
     pushReply,
     spliceReply,
+    setShares,
   }
 })

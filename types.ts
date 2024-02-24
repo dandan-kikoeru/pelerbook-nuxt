@@ -1,6 +1,6 @@
 export interface User {
-  value: User
-  data: User
+  value?: User
+  data?: User
   avatar: string
   firstname: string
   id: number
@@ -16,8 +16,8 @@ export interface Posts {
 }
 
 export interface Post {
-  value: Post
-  data: Post
+  value?: Post
+  data?: Post
   caption: string
   createdAt: Date
   id: string
@@ -27,6 +27,8 @@ export interface Post {
   user: User
   commentsCount: number
   comments: Comment[]
+  shared: Post | null
+  sharesCount: number
 }
 
 export interface Meta {

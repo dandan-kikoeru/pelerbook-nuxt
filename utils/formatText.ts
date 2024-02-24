@@ -1,4 +1,7 @@
-export default (input: string): string => {
+export default (input?: string) => {
+  if (!input) {
+    return
+  }
   return input
     .replace(/\n/g, '<br>')
     .replace(/\*(.*?)\*/g, '<b>$1</b>')

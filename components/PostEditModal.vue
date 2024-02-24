@@ -7,7 +7,7 @@ const fileInputEl = ref<any>(null)
 const { isFetching, editPost } = usePost()
 import type { Form, Post } from '~/types'
 
-onClickOutside(editPostEl, () => emit('close'))
+onClickOutside(editPostEl, (e) => emit('close'))
 
 useEventListener(document, 'keydown', (e) => {
   if (e.key === 'Escape') {
@@ -15,19 +15,19 @@ useEventListener(document, 'keydown', (e) => {
   }
 })
 
-const { data } = defineProps<{
-  data: Post
+const { post } = defineProps<{
+  post: Post
 }>()
 
 const form: Form = reactive({
-  caption: decodeHTML(data.caption),
-  image: data.image,
+  caption: decodeHTML(post.caption),
+  image: post.image,
 })
-const isEmpty = computed(() => /^\s*$/.test(form.caption))
+const isEmpty = computed(() => /^\s*$/.test(form.caption) && !form.image)
 
 const submit = async () => {
   if (!isEmpty.value) {
-    await editPost(form, data.id)
+    await editPost(form, post.id)
     await emit('close')
   }
 }
@@ -60,8 +60,8 @@ const handleRemoveFile = () => {
   imagePreviewUrl.value = ''
 }
 
-if (data.image) {
-  imagePreviewUrl.value = data.image
+if (post.image) {
+  imagePreviewUrl.value = post.image
 }
 
 onMounted(() => {
@@ -87,45 +87,54 @@ onUnmounted(() => {
         <IconsClose />
       </div>
     </div>
-    <div class="card-body gap-4 py-4">
+    <div class="card-body -m-4">
       <form @submit.prevent="submit">
-        <NuxtScrollbar class="flex gap-4 flex-col">
+        <NuxtScrollbar>
           <div class="max-h-96">
             <textarea
               ref="textareaEl"
               v-model="form.caption"
-              :placeholder="`What's on your mind, ${data.user.firstname}`"
-              class="w-full bg-transparent outline-none resize-none"
+              :placeholder="`What's on your mind, ${post.user.firstname}`"
+              class="w-full bg-transparent outline-none resize-none pl-4"
               @input="handleTextarea()"
               @keydown.enter.exact.prevent="submit"
             />
-            <div v-if="imagePreviewUrl" class="relative m-4">
-              <div
-                class="absolute btn btn-circle btn-accent text-2xl btn-sm right-2 top-2"
-                @click="handleRemoveFile"
-              >
-                <IconsClose />
+            <template v-if="!post.shared">
+              <div v-if="imagePreviewUrl" class="relative m-4">
+                <div
+                  class="absolute btn btn-circle btn-accent text-2xl btn-sm right-2 top-2"
+                  @click="handleRemoveFile"
+                >
+                  <IconsClose />
+                </div>
+                <img :src="imagePreviewUrl" class="rounded-xl w-full" />
               </div>
-              <img :src="imagePreviewUrl" class="rounded-xl w-full" />
-            </div>
+              <div
+                class="btn btn-ghost btn-circle text-2xl"
+                @click="openfileInputEl"
+                v-if="!imagePreviewUrl"
+              >
+                <IconsPhoto />
+              </div>
+              <input
+                type="file"
+                ref="fileInputEl"
+                @change="handleFileInput"
+                accept=".jpg, .jpeg, .png, .webp"
+                class="hidden"
+              />
+            </template>
+            <template v-else-if="post.shared">
+              <div
+                class="pointer-events-none border border-accent m-4 rounded-xl"
+              >
+                <PostShare :post="post.shared" />
+              </div>
+            </template>
           </div>
-          <div
-            class="btn btn-ghost btn-circle text-2xl"
-            @click="openfileInputEl"
-            v-if="!imagePreviewUrl"
-          >
-            <IconsPhoto />
-          </div>
-          <input
-            type="file"
-            ref="fileInputEl"
-            @change="handleFileInput"
-            accept=".jpg, .jpeg, .png, .webp"
-            class="hidden"
-          />
         </NuxtScrollbar>
         <button
-          class="btn btn-secondary normal-case btn-block mx-auto mt-2"
+          class="btn btn-primary normal-case btn-block mx-auto mt-4"
           :disabled="isFetching || isEmpty"
         >
           Edit

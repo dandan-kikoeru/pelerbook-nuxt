@@ -4,6 +4,8 @@ export const useSingleStore = defineStore('single', () => {
   const { $axios } = useNuxtApp()
   const { defaultProfileData } = useProfileStore()
   const defaultPostData: Post = reactive({
+    value: null,
+    data: null,
     id: '0',
     caption: 'Lorem ipsum dolor sit amet',
     createdAt: new Date('1970-01-01T00:00:00.000Z'),

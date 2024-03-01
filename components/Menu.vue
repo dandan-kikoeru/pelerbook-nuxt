@@ -7,16 +7,16 @@ useEventListener(document, 'keydown', (e) => {
   }
 })
 const menu = ref<HTMLElement | null>(null)
-onClickOutside(menu, (e: any) => {
-  if (e.target === menuBtn || e.target.parentElement === menuBtn) {
-    // console.log(e.target === menuBtn)
-    // console.log(e.target.parentElement === menuBtn)
+onClickOutside(menu, (e) => {
+  const target = e.target as HTMLElement
+  if (
+    target === menuBtn ||
+    target === menuBtn.firstChild ||
+    target === menuBtn.firstChild?.firstChild
+  ) {
     emit('close')
   }
   emit('close')
-  // console.log(e.target)
-  // console.log(e.target.parentElement)
-  // console.log(menuBtn)
 })
 const { menuBtn } = defineProps<{
   menuBtn: HTMLElement

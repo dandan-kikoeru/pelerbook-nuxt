@@ -9,8 +9,8 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const fetchUser = async () => {
-    const response = await $axios.get('/api/user')
-    setUser(response.data)
+    const { data } = await $axios.get<{ user: User }>('/api/user')
+    setUser(data.user)
   }
 
   const login = async (form: object) => {
@@ -49,8 +49,8 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const isLoggedIn = computed(() => !!user.value)
-  const setUser = (data?: User) => {
-    data ? (user.value = data) : (user.value = null)
+  const setUser = (data: User | null = null) => {
+    user.value = data
   }
 
   return {

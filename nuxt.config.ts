@@ -13,20 +13,21 @@ export default defineNuxtConfig({
     '@davestewart/nuxt-scrollbar',
   ],
   ssr: false,
-  nitro: {
-    routeRules: {
-      '/backend/**': {
-        proxy: 'http://localhost:8000/**',
-      },
-      '/avatars/**': {
-        proxy: 'http://localhost:8000/avatars/**',
-      },
-      '/covers/**': {
-        proxy: 'http://localhost:8000/covers/**',
-      },
-      '/images/**': {
-        proxy: 'http://localhost:8000/images/**',
-      },
+  routeRules: {
+    '/api/**': {
+      proxy: `http://localhost:8000/api/**`,
+    },
+    '/sanctum/**': {
+      proxy: `http://localhost:8000/sanctum/**`,
+    },
+    '/avatars/**': {
+      proxy: `http://localhost:8000/avatars/**`,
+    },
+    '/covers/**': {
+      proxy: `http://localhost:8000/**`,
+    },
+    '/images/**': {
+      proxy: `http://localhost:8000/**`,
     },
   },
   pinia: {

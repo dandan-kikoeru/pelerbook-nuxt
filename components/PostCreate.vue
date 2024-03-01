@@ -3,7 +3,7 @@ const emit = defineEmits()
 const postCreateModalEl = ref(null)
 const { user } = useAuthStore()
 onClickOutside(postCreateModalEl, () => toggleCreatePost())
-const { caption } = storeToRefs(useCaptionStore())
+const { caption } = storeToRefs(useGeneralStore())
 
 const removeNewLine = (input: string | undefined) => {
   if (input !== undefined) {
@@ -22,7 +22,7 @@ const [showCreatePost, toggleCreatePost] = useToggle(false)
     </NuxtLink>
     <input
       class="bg-accent outline-none py-2 px-4 w-full rounded-full hover:bg-[#4e4f50] cursor-pointer duration-200"
-      :placeholder="`What's on your mind, ${user?.firstname}`"
+      :placeholder="`What's on your mind, ${user?.firstName}`"
       readonly
       @click="toggleCreatePost()"
       :value="removeNewLine(caption)"

@@ -5,7 +5,7 @@ const { post } = defineProps<{ post: Post }>()
 const auth = useAuthStore()
 const single = useSingleStore()
 const { isFetching: isCommentFetching } = storeToRefs(single)
-const route: any = useRoute()
+const route = useRoute()
 
 const [showMenu, toggleMenu] = useToggle(false)
 const [showEditPost, toggleEditPost] = useToggle(false)
@@ -47,7 +47,7 @@ const handleFetchComments = async () => {
         <div>
           <p class="font-semibold">
             <NuxtLink :to="`/${post.user.id}`" class="hover:underline">
-              {{ post.user.firstname }}
+              {{ post.user.firstName }}
               {{ post.user.surname }}
             </NuxtLink>
           </p>
@@ -199,7 +199,7 @@ const handleFetchComments = async () => {
     <PostEditModal
       @close="toggleEditPost()"
       class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-      :firstName="auth.user?.firstname"
+      :firstName="auth.user?.firstName"
       :post="post"
     />
   </div>
@@ -207,7 +207,7 @@ const handleFetchComments = async () => {
     <PostShareModal
       @close="toggleSharePost()"
       class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-      :firstName="auth.user?.firstname"
+      :firstName="auth.user?.firstName"
       :post="post.shared ? post.shared : post"
     />
   </div>

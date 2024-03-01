@@ -5,7 +5,7 @@ export const useIndexStore = defineStore('index', () => {
   const pages = ref<number>(1)
   const links = ref<Links>()
 
-  const push = (data?: any) => {
+  const push = (data: Post[]) => {
     posts.value.push(...data)
   }
 

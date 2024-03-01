@@ -21,7 +21,7 @@ const { post } = defineProps<{ post: Post }>()
         <div>
           <p class="font-semibold">
             <NuxtLink :to="`/${post.user.id}`" class="hover:underline">
-              {{ post.user.firstname }}
+              {{ post.user.firstName }}
               {{ post.user.surname }}
             </NuxtLink>
           </p>

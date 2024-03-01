@@ -2,10 +2,10 @@
 const emit = defineEmits()
 const editPostEl = ref(null)
 const textareaEl = ref<null | HTMLElement>(null)
-const fileInputEl = ref<any>(null)
+const fileInputEl = ref<null | HTMLInputElement>(null)
 
 const { isFetching, editPost } = usePost()
-import type { Form, Post } from '~/types'
+import type { Post } from '~/types'
 
 onClickOutside(editPostEl, (e) => emit('close'))
 
@@ -19,7 +19,7 @@ const { post } = defineProps<{
   post: Post
 }>()
 
-const form: Form = reactive({
+const form: { caption: string; image: string | Blob } = reactive({
   caption: decodeHTML(post.caption),
   image: post.image,
 })
@@ -40,19 +40,24 @@ const handleTextarea = () => {
 const imagePreviewUrl = ref<string | null>(null)
 const handleFileInput = () => {
   if (
-    !['image/png', 'image/jpeg', 'image/webp'].includes(
-      fileInputEl.value?.files[0].type,
-    )
+    fileInputEl.value instanceof HTMLInputElement &&
+    fileInputEl.value.files
   ) {
-    return console.error('File format not supported')
-  }
+    const selectedFile: Blob = fileInputEl.value.files[0]
 
-  form.image = fileInputEl.value?.files[0]
-  imagePreviewUrl.value = URL.createObjectURL(form.image)
+    if (
+      !['image/png', 'image/jpeg', 'image/webp'].includes(selectedFile.type)
+    ) {
+      return console.error('File format not supported')
+    }
+
+    form.image = selectedFile
+    imagePreviewUrl.value = URL.createObjectURL(selectedFile)
+  }
 }
 
 const openfileInputEl = () => {
-  fileInputEl.value.click()
+  fileInputEl.value ? fileInputEl.value.click() : -1
 }
 
 const handleRemoveFile = () => {
@@ -67,7 +72,7 @@ if (post.image) {
 onMounted(() => {
   document.body.classList.add('overflow-hidden', 'mr-4')
   document.body.classList.remove('overflow-y-scroll')
-  textareaEl.value ? textareaEl.value.focus() : ''
+  textareaEl.value ? textareaEl.value.focus() : -1
   handleTextarea()
 })
 
@@ -94,7 +99,7 @@ onUnmounted(() => {
             <textarea
               ref="textareaEl"
               v-model="form.caption"
-              :placeholder="`What's on your mind, ${post.user.firstname}`"
+              :placeholder="`What's on your mind, ${post.user.firstName}`"
               class="w-full bg-transparent outline-none resize-none pl-4"
               @input="handleTextarea()"
               @keydown.enter.exact.prevent="submit"

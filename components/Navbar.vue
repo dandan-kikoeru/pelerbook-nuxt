@@ -48,7 +48,7 @@ const menuBtn = ref()
             :to="`${user?.id}`"
             @click="toggleMenu()"
           >
-            <IconsProfile />{{ user?.firstname }} {{ user?.surname }}
+            <IconsProfile />{{ user?.firstName }} {{ user?.surname }}
           </NuxtLink>
         </li>
         <li>

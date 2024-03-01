@@ -1,9 +1,21 @@
 <script setup lang="ts">
+import type { AxiosError } from '~/types'
+
+definePageMeta({
+  layout: false,
+  middleware: ['guest'],
+})
+
 useHead({
   title: 'Pelerbook - log in or sign up',
 })
 
-const [showRegister, toggleRegister] = useToggle()
+const showRegister = ref<boolean>(false)
+const toggleRegister = () => {
+  errors.value = []
+  showRegister.value = !showRegister.value
+}
+const registerModalEl = ref<null | HTMLElement>(null)
 
 const form = reactive({
   email: '',
@@ -11,20 +23,23 @@ const form = reactive({
 })
 
 const auth = useAuthStore()
-const { isFetching, isLoggedIn } = storeToRefs(auth)
-definePageMeta({
-  layout: false,
-})
+const { isFetching } = storeToRefs(auth)
 
-if (isLoggedIn.value) {
-  navigateTo('/', { replace: true })
-}
-
+const { errors } = storeToRefs(useGeneralStore())
 const submit = async () => {
   try {
     await auth.login(form)
-  } catch (error: any) {
-    error.response.status === 401 ? await auth.login(form) : -1
+    errors.value = []
+  } catch (e: unknown) {
+    const { response } = e as AxiosError
+    if (response.data.errors) {
+      const { email = [], password = [] } = response.data.errors
+      errors.value = []
+      errors.value.push(...email, ...password)
+    } else {
+      errors.value = []
+      errors.value.push(response.data.message)
+    }
   }
 }
 </script>
@@ -74,10 +89,30 @@ const submit = async () => {
         </div>
       </div>
     </form>
+    <div class="toast toast-end z-10">
+      <div
+        class="alert alert-error flex justify-between"
+        v-for="(error, index) in errors"
+        :key="index"
+      >
+        <span>{{ error }}</span>
+        <div
+          class="btn btn-xs btn-circle btn-ghost"
+          @click="() => errors.splice(index, 1)"
+        >
+          <IconsClose />
+        </div>
+      </div>
+    </div>
   </div>
-  <div v-if="showRegister" class="bg-black/50 fixed top-0 w-full h-full">
+  <div
+    v-if="showRegister"
+    class="bg-black/50 fixed top-0 w-full h-full"
+    @click="(e) => (e.target === registerModalEl ? toggleRegister() : 0)"
+    ref="registerModalEl"
+  >
     <Register
-      @close="toggleRegister"
+      @close="toggleRegister()"
       class="top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
     />
   </div>

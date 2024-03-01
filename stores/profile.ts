@@ -1,7 +1,6 @@
 import type { Links, Post, User, Comment, Reply } from '~/types'
 
 export const useProfileStore = defineStore('profile', () => {
-  const indexStore = useIndexStore()
   const defaultLinksValue: Links = {
     first: '',
     last: '',
@@ -11,9 +10,9 @@ export const useProfileStore = defineStore('profile', () => {
   const posts = ref<Post[]>([])
   const pages = ref<number>(1)
   const links = ref<Links>(defaultLinksValue)
-  const profileId = ref<any>()
+  const profileId = ref<number>()
 
-  const push = (data?: any) => {
+  const push = (data: Post[]) => {
     posts.value.push(...data)
   }
 
@@ -39,7 +38,7 @@ export const useProfileStore = defineStore('profile', () => {
     links.value = data
   }
 
-  const setProfileId = (data: any) => {
+  const setProfileId = (data: number) => {
     profileId.value = data
   }
 
@@ -79,7 +78,7 @@ export const useProfileStore = defineStore('profile', () => {
 
   const defaultProfileData: User = reactive({
     avatar: '/avatars/guest.webp',
-    firstname: 'John',
+    firstName: 'John',
     surname: 'Doe',
     id: 0,
     cover: '',

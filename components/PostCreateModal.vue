@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import type { Form, User } from '~/types'
+import type { User } from '~/types'
 
 const textareaEl = ref<null | HTMLElement>(null)
-const fileInputEl = ref<any>(null)
+const fileInputEl = ref<null | HTMLElement>(null)
 const { isFetching, createPost } = usePost()
-const captionStore = useCaptionStore()
+const captionStore = useGeneralStore()
 const emit = defineEmits()
 defineProps<{
   user: User | null
@@ -16,7 +16,7 @@ useEventListener(document, 'keydown', (e) => {
   }
 })
 
-const form: Form = reactive({
+const form: { caption: string; image: string | Blob } = reactive({
   caption: captionStore.caption,
   image: '',
 })
@@ -36,22 +36,26 @@ const handleTextarea = () => {
   }
   captionStore.setCaption(form.caption)
 }
-const imagePreviewUrl = ref<string | null>(null)
+const imagePreviewUrl = ref<string>('')
 const handleFileInput = () => {
   if (
-    !['image/png', 'image/jpeg', 'image/webp'].includes(
-      fileInputEl.value?.files[0].type,
-    )
+    fileInputEl.value instanceof HTMLInputElement &&
+    fileInputEl.value.files
   ) {
-    return console.error('File format not supported')
-  }
+    const selectedFile: Blob = fileInputEl.value.files[0]
+    if (
+      !['image/png', 'image/jpeg', 'image/webp'].includes(selectedFile.type)
+    ) {
+      return console.error('File format not supported')
+    }
 
-  form.image = fileInputEl.value?.files[0]
-  imagePreviewUrl.value = URL.createObjectURL(form.image)
+    form.image = selectedFile
+    imagePreviewUrl.value = URL.createObjectURL(selectedFile)
+  }
 }
 
 const openfileInputEl = () => {
-  fileInputEl.value.click()
+  fileInputEl.value ? fileInputEl.value.click() : -1
 }
 
 const handleRemoveFile = () => {
@@ -62,7 +66,7 @@ const handleRemoveFile = () => {
 onMounted(() => {
   document.body.classList.add('overflow-hidden', 'mr-4')
   document.body.classList.remove('overflow-y-scroll')
-  textareaEl.value ? textareaEl.value.focus() : ''
+  textareaEl.value ? textareaEl.value.focus() : -1
   handleTextarea()
 })
 
@@ -93,7 +97,7 @@ onUnmounted(() => {
             <textarea
               ref="textareaEl"
               v-model="form.caption"
-              :placeholder="`What's on your mind, ${user?.firstname}`"
+              :placeholder="`What's on your mind, ${user?.firstName}`"
               class="w-full bg-transparent outline-none resize-none pl-4"
               @input="handleTextarea()"
               @keydown.enter.exact.prevent="submit()"

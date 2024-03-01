@@ -1,8 +1,11 @@
 <script setup lang="ts">
 const index = useIndexStore()
 const { posts, links } = storeToRefs(index)
-const { isLoggedIn } = useAuthStore()
 const { isFetching, fetchIndex } = useFetchPost()
+
+definePageMeta({
+  middleware: ['auth'],
+})
 
 useHead({
   title: 'Pelerbook',
@@ -12,12 +15,6 @@ const fetch = () => {
   fetchIndex()
   index.incrementPage()
 }
-
-isLoggedIn
-  ? posts.value.length === 0
-    ? fetch()
-    : ''
-  : navigateTo('/login', { replace: true })
 
 const target = ref<HTMLElement | null>(null)
 const isObserverActive = ref(true)
@@ -29,6 +26,7 @@ useIntersectionObserver(target, ([{ isIntersecting }]) => {
   !links.value?.next ? (isObserverActive.value = false) : ''
   fetch()
 })
+posts.value.length === 0 ? fetch() : ''
 
 watchArray(posts, () => {
   posts.value.length === 0 ? fetch() : ''

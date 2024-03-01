@@ -1,18 +1,22 @@
 <script setup lang="ts">
-const auth = useAuthStore()
-const { $axios } = useNuxtApp()
+import type { AxiosError } from '~/types'
 
-if (!auth.isLoggedIn) {
-  navigateTo('/', { replace: true })
-}
+const { $axios } = useNuxtApp()
+const auth = useAuthStore()
+
+definePageMeta({
+  middleware: ['auth'],
+})
+
 useHead({
   title: 'Pelerbook',
 })
 
-const form: any = reactive({
+const form: { avatar: string | Blob; cover: string | Blob } = reactive({
   avatar: '',
   cover: '',
 })
+const { errors } = storeToRefs(useGeneralStore())
 const isFetching = ref(false)
 const submit = async () => {
   try {
@@ -23,18 +27,23 @@ const submit = async () => {
       },
     })
     await auth.setUser(response.data)
-  } catch (error) {
+  } catch (e: unknown) {
+    const { response } = e as AxiosError
+    const { avatar = [], cover = [] } = response.data.errors
+    errors.value = []
+    errors.value.push(...avatar, ...cover)
   } finally {
     isFetching.value = false
     handleCancelPreview()
+    errors.value = []
   }
 }
 
 const handleCancelPreview = () => {
   form.avatar = ''
   form.cover = ''
-  avatarPreviewUrl.value = auth.user?.avatar
-  coverPreviewUrl.value = auth.user?.cover
+  avatarPreviewUrl.value = auth.user ? auth.user.avatar : ''
+  coverPreviewUrl.value = auth.user ? auth.user.cover : ''
   resetEdit()
   isEditing.value = false
 }
@@ -42,71 +51,90 @@ const handleCancelPreview = () => {
  *  * AVATAR
  */
 
-const avatarInputEl = ref<any>(null)
-const avatarPreviewUrl = ref<any>(auth.user?.avatar)
+const avatarInputEl = ref<HTMLElement | null>(null)
+const avatarPreviewUrl = ref<string>(auth.user ? auth.user.avatar : '')
 const openAvatar = () => {
-  avatarInputEl.value.click()
+  avatarInputEl.value ? avatarInputEl.value.click() : -1
 }
 const handleAvatarInput = () => {
-  handleCancelPreview()
   if (
-    !['image/png', 'image/jpeg', 'image/webp'].includes(
-      avatarInputEl.value?.files[0].type,
-    )
+    avatarInputEl.value instanceof HTMLInputElement &&
+    avatarInputEl.value.files
   ) {
-    return console.error('File format not supported')
+    handleCancelPreview()
+    const selectedFile: Blob = avatarInputEl.value.files[0]
+    if (
+      !['image/png', 'image/jpeg', 'image/webp'].includes(selectedFile.type)
+    ) {
+      return errors.value.push(
+        'The avatar field must be a file of type: jpeg, png, jpg, webp.',
+      )
+    }
+    form.avatar = selectedFile
+    avatarPreviewUrl.value = URL.createObjectURL(selectedFile)
   }
-  form.avatar = avatarInputEl.value?.files[0]
-  avatarPreviewUrl.value = URL.createObjectURL(form.avatar)
 }
 
 /**
  *  * COVER
  */
 
-const coverInputEl = ref<any>(null)
-const coverPreviewUrl = ref<any>(auth.user?.cover)
+const coverInputEl = ref<null | HTMLElement>(null)
+const coverPreviewUrl = ref<string>(auth.user ? auth.user.cover : '')
 const openCover = () => {
-  coverInputEl.value.click()
+  coverInputEl.value ? coverInputEl.value.click() : -1
 }
 const handleCoverInput = () => {
-  handleCancelPreview()
   if (
-    !['image/png', 'image/jpeg', 'image/webp'].includes(
-      coverInputEl.value?.files[0].type,
-    )
+    coverInputEl.value instanceof HTMLInputElement &&
+    coverInputEl.value.files
   ) {
-    return console.error('File format not supported')
+    handleCancelPreview()
+    const selectedFile: Blob = coverInputEl.value.files[0]
+    if (
+      !['image/png', 'image/jpeg', 'image/webp'].includes(selectedFile.type)
+    ) {
+      return errors.value.push(
+        'The cover field must be a file of type: jpeg, png, jpg, webp.',
+      )
+    }
+    form.cover = selectedFile
+    coverPreviewUrl.value = URL.createObjectURL(selectedFile)
   }
-  form.cover = coverInputEl.value?.files[0]
-  coverPreviewUrl.value = URL.createObjectURL(form.cover)
 }
 
 /**
  *  * NAME
  **/
+
 const isEditing = ref(false)
 const toggleEdit = () => {
   !isEditing.value ? handleCancelPreview() : resetEdit()
   isEditing.value = !isEditing.value
 }
 const resetEdit = () => {
-  formName.firstname = auth.user?.firstname
+  formName.firstName = auth.user?.firstName
   formName.surname = auth.user?.surname
 }
+
 const submitName = async () => {
   try {
     isFetching.value = true
     const response = await $axios.post('/api/user/update', formName)
     auth.setUser(response.data)
     toggleEdit()
-  } catch (error) {
+  } catch (e: unknown) {
+    const { response } = e as AxiosError
+    const { firstName = [], surname = [] } = response.data.errors
+    errors.value = []
+    errors.value.push(...firstName, ...surname)
   } finally {
     isFetching.value = false
+    errors.value = []
   }
 }
 const formName = reactive({
-  firstname: auth.user?.firstname,
+  firstName: auth.user?.firstName,
   surname: auth.user?.surname,
 })
 </script>
@@ -126,11 +154,11 @@ const formName = reactive({
         <form @submit.prevent="submitName">
           <div class="flex gap-4">
             <input
-              name="firstname"
+              name="firstName"
               type="text"
               placeholder="First name"
               class="input w-full max-w-xs bg-base-100"
-              v-model="formName.firstname"
+              v-model="formName.firstName"
               :disabled="!isEditing"
             />
             <input
@@ -242,6 +270,21 @@ const formName = reactive({
             </div>
           </form>
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="toast toast-end z-10">
+    <div
+      class="alert alert-error flex justify-between"
+      v-for="(error, index) in errors"
+      :key="index"
+    >
+      <span>{{ error }}</span>
+      <div
+        class="btn btn-xs btn-circle btn-ghost"
+        @click="() => errors.splice(index, 1)"
+      >
+        <IconsClose />
       </div>
     </div>
   </div>

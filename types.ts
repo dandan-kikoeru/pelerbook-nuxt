@@ -1,23 +1,13 @@
 export interface User {
-  value?: User
-  data?: User
   avatar: string
-  firstname: string
+  firstName: string
   id: number
   surname: string
   cover: string
   createdAt: Date
 }
 
-export interface Posts {
-  data: Post[]
-  links?: Links
-  meta?: Meta
-}
-
 export interface Post {
-  value?: Post
-  data?: Post
   caption: string
   createdAt: Date
   id: string
@@ -29,17 +19,6 @@ export interface Post {
   comments: Comment[]
   shared: Post | null
   sharesCount: number
-}
-
-export interface Meta {
-  current_page: number
-  from: number
-  last_page: number
-  links: Link[]
-  path: string
-  per_page: number
-  to: number
-  total: number
 }
 
 export interface Links {
@@ -55,14 +34,7 @@ export interface Link {
   active: boolean
 }
 
-export interface Form {
-  caption: string
-  image: any
-}
-
 export interface Comment {
-  value: Comment
-  data: Comment
   content: string
   id: string
   user: User
@@ -75,8 +47,6 @@ export interface Comment {
 }
 
 export interface Reply {
-  value: Reply
-  data: Reply
   content: string
   id: string
   user: User
@@ -84,4 +54,22 @@ export interface Reply {
   commentId: string
   likes: number
   likedByUser: boolean
+}
+
+export interface AxiosError {
+  response: {
+    data: {
+      message: string
+      errors: {
+        email: [string]
+        password: [string]
+        firstName: [string]
+        surname: [string]
+        avatar: [string]
+        cover: [string]
+      }
+    }
+    status: number
+    statusText: string
+  }
 }

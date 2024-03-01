@@ -1,5 +1,5 @@
 <script setup>
 definePageMeta({
-  middleware: 'japanesegoblin',
+  middleware: 'japaneseGoblin',
 })
 </script>

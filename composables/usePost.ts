@@ -1,9 +1,9 @@
 import type { Post } from '~/types'
 export const usePost = () => {
-  const route: any = useRoute()
+  const route = useRoute()
   const indexStore = useIndexStore()
   const profileStore = useProfileStore()
-  const captionStore = useCaptionStore()
+  const captionStore = useGeneralStore()
   const singleStore = useSingleStore()
   const isFetching = ref(false)
   const { $axios } = useNuxtApp()
@@ -29,13 +29,17 @@ export const usePost = () => {
   const createPost = async (form: Object) => {
     try {
       isFetching.value = true
-      const response: any = await $axios.post('/api/post/store', form, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const { data } = await $axios.post<{ post: Post }>(
+        '/api/post/store',
+        form,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         },
-      })
-      indexStore.unshift(response.data)
-      profileStore.unshift(response.data)
+      )
+      indexStore.unshift(data.post)
+      profileStore.unshift(data.post)
       captionStore.setCaption()
     } finally {
       isFetching.value = false
@@ -45,15 +49,19 @@ export const usePost = () => {
   const editPost = async (form: Object, id: string) => {
     try {
       isFetching.value = true
-      const response: any = await $axios.post(`/api/post/update/${id}`, form, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const { data } = await $axios.post<{ caption: string; image: string }>(
+        `/api/post/update/${id}`,
+        form,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         },
-      })
-      indexStore.setCaption(response.data.caption, response.data.image, id)
-      profileStore.setCaption(response.data.caption, response.data.image, id)
+      )
+      indexStore.setCaption(data.caption, data.image, id)
+      profileStore.setCaption(data.caption, data.image, id)
       if (route.params.postId) {
-        singleStore.setCaption(response.data.caption, response.data.image)
+        singleStore.setCaption(data.caption, data.image)
       }
     } finally {
       isFetching.value = false
@@ -63,11 +71,14 @@ export const usePost = () => {
   const likePost = async (id: string) => {
     try {
       isFetching.value = true
-      const response: any = await $axios.post(`/api/post/like/${id}`)
-      indexStore.setLikes(response.data.likes, response.data.likedByUser, id)
-      profileStore.setLikes(response.data.likes, response.data.likedByUser, id)
+      const { data } = await $axios.post<{
+        likes: number
+        likedByUser: boolean
+      }>(`/api/post/like/${id}`)
+      indexStore.setLikes(data.likes, data.likedByUser, id)
+      profileStore.setLikes(data.likes, data.likedByUser, id)
       if (route.params.postId) {
-        singleStore.setLikes(response.data.likes, response.data.likedByUser)
+        singleStore.setLikes(data.likes, data.likedByUser)
       }
     } finally {
       isFetching.value = false
@@ -77,12 +88,15 @@ export const usePost = () => {
   const sharePost = async (form: Object, id: string) => {
     try {
       isFetching.value = true
-      const response: any = await $axios.post(`/api/post/share/${id}`, form)
-      indexStore.unshift(response.data.data)
-      profileStore.unshift(response.data.data)
-      indexStore.setShares(response.data.sharesCount, id)
-      profileStore.setShares(response.data.sharesCount, id)
-      singleStore.setShares(response.data.sharesCount)
+      const { data } = await $axios.post<{ post: Post; sharesCount: number }>(
+        `/api/post/share/${id}`,
+        form,
+      )
+      indexStore.unshift(data.post)
+      profileStore.unshift(data.post)
+      indexStore.setShares(data.sharesCount, id)
+      profileStore.setShares(data.sharesCount, id)
+      singleStore.setShares(data.sharesCount)
     } finally {
       isFetching.value = false
     }

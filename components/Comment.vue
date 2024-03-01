@@ -61,7 +61,7 @@ setTimeout(() => {
             <div class="bg-[#3a3b3c] py-2 px-4 rounded-3xl relative max-w-96">
               <p class="font-semibold">
                 <NuxtLink :to="`/${comment.user.id}`" class="hover:underline">
-                  {{ comment.user.firstname }}
+                  {{ comment.user.firstName }}
                   {{ comment.user.surname }}
                 </NuxtLink>
               </p>

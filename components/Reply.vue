@@ -52,7 +52,7 @@ setTimeout(() => {
             >
               <p class="font-semibold">
                 <NuxtLink :to="`/${reply.user.id}`" class="hover:underline">
-                  {{ reply.user.firstname }}
+                  {{ reply.user.firstName }}
                   {{ reply.user.surname }}
                 </NuxtLink>
               </p>

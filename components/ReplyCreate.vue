@@ -25,12 +25,8 @@ const peer = () => {
 onClickOutside(el, () => (peerSelected.value = false))
 const { isFetching, createReply } = useReply()
 const submit = async () => {
-  try {
-    await createReply(form, comment)
-    form.content = ''
-  } catch (error: any) {
-    console.error(error.response.data.message)
-  }
+  await createReply(form, comment)
+  form.content = ''
 }
 
 defineExpose({

@@ -1,27 +1,43 @@
 <script setup lang="ts">
+import type { AxiosError } from '~/types'
 const emit = defineEmits()
 const registerEl = ref(null)
-
-onClickOutside(registerEl, () => emit('close'))
+const auth = useAuthStore()
+const { isFetching } = storeToRefs(auth)
+// onClickOutside(registerEl, () => emit('close'))
 
 useEventListener(document, 'keydown', (e) => {
   if (e.key === 'Escape') {
     emit('close')
   }
 })
+
 const form = reactive({
-  firstname: '',
+  firstName: '',
   surname: '',
   email: '',
   password: '',
 })
-const { register, login } = useAuthStore()
-const { isFetching } = storeToRefs(useAuthStore())
+
+const { errors } = storeToRefs(useGeneralStore())
 const submit = async () => {
   try {
-    await register(form)
-  } catch (error: any) {
-    error.response.status === 401 ? await login(form) : -1
+    await auth.register(form)
+  } catch (e: unknown) {
+    const { response } = e as AxiosError
+    if (response.data.errors) {
+      const {
+        email = [],
+        password = [],
+        firstName = [],
+        surname = [],
+      } = response.data.errors
+      errors.value = []
+      errors.value.push(...firstName, ...surname, ...email, ...password)
+    } else {
+      errors.value = []
+      errors.value.push(response.data.message)
+    }
   }
 }
 </script>
@@ -44,11 +60,11 @@ const submit = async () => {
         <div class="flex gap-4">
           <div class="flex flex-col gap-4">
             <input
-              name="firstname"
+              name="firstName"
               type="text"
               placeholder="First name"
               class="input w-full max-w-xs bg-base-100"
-              v-model="form.firstname"
+              v-model="form.firstName"
             />
           </div>
           <div class="flex flex-col gap-4">

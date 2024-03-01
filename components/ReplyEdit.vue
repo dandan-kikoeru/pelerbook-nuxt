@@ -18,12 +18,8 @@ const isEmpty = computed(() => /^\s*$/.test(form.content))
 
 const { isFetching, editReply } = useReply()
 const submit = async () => {
-  try {
-    await editReply(form, reply, comment)
-    emit('close')
-  } catch (error: any) {
-    console.error(error.response.data.message)
-  }
+  await editReply(form, reply, comment)
+  emit('close')
 }
 
 defineExpose({

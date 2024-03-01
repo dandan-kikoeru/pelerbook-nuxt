@@ -64,7 +64,7 @@ onUnmounted(() => {
             <textarea
               ref="textareaEl"
               v-model="form.caption"
-              :placeholder="`What's on your mind, ${user?.firstname}`"
+              :placeholder="`What's on your mind, ${user?.firstName}`"
               class="w-full bg-transparent outline-none resize-none pl-4"
               @input="handleTextarea()"
               @keydown.enter.exact.prevent="submit"

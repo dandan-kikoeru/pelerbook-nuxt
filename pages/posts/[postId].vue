@@ -1,11 +1,17 @@
 <script lang="ts" setup>
 const { isFetching, fetchPost } = useFetchPost()
 const single = useSingleStore()
-await fetchPost()
+
+definePageMeta({
+  middleware: ['auth'],
+})
 
 useHead({
-  title: `${single.post?.user.firstname} ${single.post?.user.surname} - ${truncate(single.post?.caption)} | Pelerbook`,
+  title: `${single.post?.user.firstName} ${single.post?.user.surname} - ${truncate(single.post?.caption)} | Pelerbook`,
 })
+
+await fetchPost()
+
 useSingleStore().fetchComments()
 useSingleStore().incrementPage()
 </script>

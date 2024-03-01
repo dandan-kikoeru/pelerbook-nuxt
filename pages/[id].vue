@@ -2,23 +2,23 @@
 const profile = useProfileStore()
 const { posts, profileData, links } = storeToRefs(profile)
 const { isFetching, fetchProfile } = useFetchPost()
-const { user, isLoggedIn } = useAuthStore()
-const route: any = useRoute()
+const { user } = useAuthStore()
+const route = useRoute()
 
-if (!isLoggedIn) {
-  navigateTo('/login', { replace: true })
-}
+definePageMeta({
+  middleware: ['auth'],
+})
 
 useHead({
   title: 'Pelerbook',
 })
 
 if (!profile.profileId) {
-  profile.setProfileId(route.params.id)
+  profile.setProfileId(+route.params.id)
 }
 
-if (route.params.id !== profile.profileId) {
-  profile.setProfileId(route.params.id)
+if (+route.params.id !== profile.profileId) {
+  profile.setProfileId(+route.params.id)
   profile.reset()
 }
 
@@ -63,13 +63,13 @@ useIntersectionObserver(target, ([{ isIntersecting }]) => {
         </div>
       </div>
       <h1 class="text-2xl">
-        {{ profileData?.firstname }} {{ profileData?.surname }}
+        {{ profileData?.firstName }} {{ profileData?.surname }}
       </h1>
       Joined
       {{ useDateFormat(profileData?.createdAt, 'MMM YYYY').value }}
     </div>
   </div>
-  <PostCreate v-if="route.params.id == user?.id" />
+  <PostCreate v-if="+route.params.id == user?.id" />
   <div class="mb-4">
     <Post
       v-for="(post, index) in posts"

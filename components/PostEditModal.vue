@@ -2,7 +2,7 @@
 const emit = defineEmits()
 const editPostEl = ref(null)
 const textareaEl = ref<null | HTMLElement>(null)
-const fileInputEl = ref<null | HTMLInputElement>(null)
+const fileInputEl = ref<null | HTMLElement>(null)
 
 const { isFetching, editPost } = usePost()
 import type { Post } from '~/types'
@@ -69,11 +69,14 @@ if (post.image) {
   imagePreviewUrl.value = post.image
 }
 
-onMounted(() => {
+onMounted(async () => {
   document.body.classList.add('overflow-hidden', 'mr-4')
   document.body.classList.remove('overflow-y-scroll')
-  textareaEl.value ? textareaEl.value.focus() : -1
-  handleTextarea()
+  if (textareaEl.value) {
+    await nextTick()
+    textareaEl.value.focus()
+    handleTextarea()
+  }
 })
 
 onUnmounted(() => {

@@ -1,15 +1,14 @@
 import type { User } from '~/types'
 
 export const useAuthStore = defineStore('auth', () => {
-  const { $axios } = useNuxtApp()
   const user = ref<User | null>(null)
   const isFetching = ref(false)
   const initCSRF = async () => {
-    await $axios.get('/sanctum/csrf-cookie')
+    await useAxios().get('/sanctum/csrf-cookie')
   }
 
   const fetchUser = async () => {
-    const { data } = await $axios.get<{ user: User }>('/api/user')
+    const { data } = await useAxios().get<{ user: User }>('/api/user')
     setUser(data.user)
   }
 
@@ -17,7 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       isFetching.value = true
       await initCSRF()
-      await $axios.post('/api/user/login', form)
+      await useAxios().post('/api/user/login', form)
       await fetchUser()
       navigateTo('/')
     } finally {
@@ -28,7 +27,7 @@ export const useAuthStore = defineStore('auth', () => {
   const logout = async () => {
     try {
       isFetching.value = true
-      await $axios.post('/api/user/logout')
+      await useAxios().post('/api/user/logout')
       setUser()
       navigateTo('/login')
     } finally {
@@ -40,7 +39,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       isFetching.value = true
       await initCSRF()
-      await $axios.post('/api/user/register', form)
+      await useAxios().post('/api/user/register', form)
       await fetchUser()
       navigateTo('/')
     } finally {

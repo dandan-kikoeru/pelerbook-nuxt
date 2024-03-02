@@ -1,7 +1,6 @@
 import type { Post, Comment, Reply, Links } from '~/types'
 
 export const useSingleStore = defineStore('single', () => {
-  const { $axios } = useNuxtApp()
   const { defaultProfileData } = useProfileStore()
   const defaultPostData: Post = reactive({
     value: null,
@@ -45,7 +44,7 @@ export const useSingleStore = defineStore('single', () => {
   const fetchComments = async () => {
     try {
       isFetching.value = true
-      const response = await $axios.get(
+      const response = await useAxios().get(
         `/api/post/${post.value.id}/comments?page=${page.value}`,
       )
       post.value.comments.unshift(...response.data.data.reverse())

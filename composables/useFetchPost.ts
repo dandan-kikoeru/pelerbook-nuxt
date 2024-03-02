@@ -1,8 +1,7 @@
-import { Axios, AxiosError } from 'axios'
+import { AxiosError } from 'axios'
 import type { Links, Post, User } from '~/types'
 
 export const useFetchPost = () => {
-  const { $axios } = useNuxtApp()
   const isFetching = ref(false)
   const route = useRoute()
   const indexStore = useIndexStore()
@@ -12,7 +11,7 @@ export const useFetchPost = () => {
   const fetchIndex = async () => {
     try {
       isFetching.value = true
-      const { data } = await $axios.get<{ data: Post[]; links: Links }>(
+      const { data } = await useAxios().get<{ data: Post[]; links: Links }>(
         `/api/post?page=${indexStore.pages}`,
       )
       indexStore.push(data.data)
@@ -25,10 +24,10 @@ export const useFetchPost = () => {
   const fetchProfile = async () => {
     try {
       isFetching.value = true
-      const { data } = await $axios.get<{ data: Post[]; links: Links }>(
+      const { data } = await useAxios().get<{ data: Post[]; links: Links }>(
         `/api/profile/posts/${route.params.id}?page=${profileStore.pages}`,
       )
-      const { data: profileData } = await $axios.get<{ user: User }>(
+      const { data: profileData } = await useAxios().get<{ user: User }>(
         `/api/profile/${route.params.id}`,
       )
       profileStore.push(data.data)
@@ -37,7 +36,7 @@ export const useFetchPost = () => {
     } catch (e: unknown) {
       const error = e as AxiosError
       console.error(`${error.response?.status}: ${error.response?.statusText}`)
-      navigateTo('/', { replace: true }) 
+      navigateTo('/', { replace: true })
     } finally {
       isFetching.value = false
     }
@@ -46,7 +45,7 @@ export const useFetchPost = () => {
   const fetchPost = async () => {
     try {
       isFetching.value = true
-      const { data } = await $axios.get<{ post: Post }>(
+      const { data } = await useAxios().get<{ post: Post }>(
         `/api/post/${route.params.postId}?withoutComments=true`,
       )
       singleStore.setPost(data.post)

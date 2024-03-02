@@ -2,7 +2,6 @@ import type { Comment } from '~/types'
 
 export const useComment = () => {
   const isFetching = ref(false)
-  const { $axios } = useNuxtApp()
   const route = useRoute()
   const indexStore = useIndexStore()
   const profileStore = useProfileStore()
@@ -11,7 +10,7 @@ export const useComment = () => {
   const createComment = async (form: Object, postId: string) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post<{
+      const { data } = await useAxios().post<{
         comment: Comment
         commentsCount: number
       }>(`/api/comment/store/${postId}`, form)
@@ -32,7 +31,7 @@ export const useComment = () => {
   ) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post(
+      const { data } = await useAxios().post(
         `/api/comment/update/${comment.id}`,
         form,
       )
@@ -49,7 +48,7 @@ export const useComment = () => {
   const deleteComment = async (comment: Comment) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post(`/api/comment/destroy/${comment.id}`)
+      const { data } = await useAxios().post(`/api/comment/destroy/${comment.id}`)
       indexStore.spliceComment(comment, data.commentsCount)
       profileStore.spliceComment(comment, data.commentsCount)
       if (route.params.postId) {
@@ -67,7 +66,7 @@ export const useComment = () => {
   ) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post<{
+      const { data } = await useAxios().post<{
         likes: number
         likedByUser: boolean
       }>(`/api/comment/like/${id}`)

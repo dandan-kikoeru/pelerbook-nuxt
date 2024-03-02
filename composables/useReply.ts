@@ -2,7 +2,6 @@ import type { Reply, Comment } from '~/types'
 
 export const useReply = () => {
   const isFetching = ref(false)
-  const { $axios } = useNuxtApp()
   const route = useRoute()
   const indexStore = useIndexStore()
   const profileStore = useProfileStore()
@@ -11,7 +10,7 @@ export const useReply = () => {
   const createReply = async (form: Object, comment: Comment) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post<{
+      const { data } = await useAxios().post<{
         reply: Reply
         commentsCount: number
       }>(`/api/reply/store/${comment.id}`, form)
@@ -28,7 +27,7 @@ export const useReply = () => {
   const editReply = async (form: Object, reply: Reply, comment: Comment) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post<{ reply: Reply }>(
+      const { data } = await useAxios().post<{ reply: Reply }>(
         `/api/reply/update/${reply.id}`,
         form,
       )
@@ -45,7 +44,7 @@ export const useReply = () => {
   const deleteReply = async (reply: Reply, comment: Comment) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post<{ commentsCount: number }>(
+      const { data } = await useAxios().post<{ commentsCount: number }>(
         `/api/reply/destroy/${reply.id}`,
       )
       indexStore.spliceReply(reply, comment, data.commentsCount)
@@ -61,7 +60,7 @@ export const useReply = () => {
   const likeReply = async (id: string, comment: Comment) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post<{ reply: Reply }>(
+      const { data } = await useAxios().post<{ reply: Reply }>(
         `/api/reply/like/${id}`,
       )
       indexStore.setReply(data.reply, comment)

@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type { AxiosError } from '~/types'
-
-const { $axios } = useNuxtApp()
 const auth = useAuthStore()
 
 definePageMeta({
@@ -21,7 +19,7 @@ const isFetching = ref(false)
 const submit = async () => {
   try {
     isFetching.value = true
-    const response = await $axios.post('/api/user/update', form, {
+    const response = await useAxios().post('/api/user/update', form, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -120,7 +118,7 @@ const resetEdit = () => {
 const submitName = async () => {
   try {
     isFetching.value = true
-    const response = await $axios.post('/api/user/update', formName)
+    const response = await useAxios().post('/api/user/update', formName)
     auth.setUser(response.data)
     toggleEdit()
   } catch (e: unknown) {

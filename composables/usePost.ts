@@ -6,12 +6,11 @@ export const usePost = () => {
   const captionStore = useGeneralStore()
   const singleStore = useSingleStore()
   const isFetching = ref(false)
-  const { $axios } = useNuxtApp()
 
   const deletePost = async (id: string) => {
     try {
       isFetching.value = true
-      await $axios.post(`/api/post/destroy/${id}`)
+      await useAxios().post(`/api/post/destroy/${id}`)
       indexStore.splice(id)
       profileStore.splice(id)
       if (route.params.postId) {
@@ -29,7 +28,7 @@ export const usePost = () => {
   const createPost = async (form: Object) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post<{ post: Post }>(
+      const { data } = await useAxios().post<{ post: Post }>(
         '/api/post/store',
         form,
         {
@@ -49,7 +48,7 @@ export const usePost = () => {
   const editPost = async (form: Object, id: string) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post<{ caption: string; image: string }>(
+      const { data } = await useAxios().post<{ caption: string; image: string }>(
         `/api/post/update/${id}`,
         form,
         {
@@ -71,7 +70,7 @@ export const usePost = () => {
   const likePost = async (id: string) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post<{
+      const { data } = await useAxios().post<{
         likes: number
         likedByUser: boolean
       }>(`/api/post/like/${id}`)
@@ -88,7 +87,7 @@ export const usePost = () => {
   const sharePost = async (form: Object, id: string) => {
     try {
       isFetching.value = true
-      const { data } = await $axios.post<{ post: Post; sharesCount: number }>(
+      const { data } = await useAxios().post<{ post: Post; sharesCount: number }>(
         `/api/post/share/${id}`,
         form,
       )

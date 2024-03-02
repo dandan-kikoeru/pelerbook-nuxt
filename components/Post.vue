@@ -85,7 +85,7 @@ const handleFetchComments = async () => {
       </div>
       <template v-if="!post.shared">
         <p class="mt-3 break-words" v-html="formatText(post.caption)" />
-        <NuxtLink :to="`/posts/${post.id}`">
+        <NuxtLink :to="`/photo/${post.id}`">
           <img :src="post.image" v-if="post.image" class="rounded-xl mb-2" />
         </NuxtLink>
       </template>

@@ -24,10 +24,10 @@ export default defineNuxtConfig({
       proxy: `http://localhost:8000/avatars/**`,
     },
     '/covers/**': {
-      proxy: `http://localhost:8000/**`,
+      proxy: `http://localhost:8000/covers/**`,
     },
     '/images/**': {
-      proxy: `http://localhost:8000/**`,
+      proxy: `http://localhost:8000/images/**`,
     },
   },
   pinia: {
